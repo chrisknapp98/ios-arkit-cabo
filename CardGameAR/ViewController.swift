@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  CaboAR
+//  CardGameAR
 //
 //  Created by Christopher Knapp on 23.04.23.
 //

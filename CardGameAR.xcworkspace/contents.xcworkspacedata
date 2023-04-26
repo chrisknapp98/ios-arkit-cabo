@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:CaboAR.xcodeproj">
+      location = "group:/Users/christopherknapp/repos/ios-arkit-cabo/CardGameAR.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:CardGameAR.xcodeproj">
    </FileRef>
 </Workspace>

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BC646535CBE397E3554A50DA /* Pods_CaboAR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62F434960BF18295101EE0A0 /* Pods_CaboAR.framework */; };
+		BC646535CBE397E3554A50DA /* Pods_CardGameAR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62F434960BF18295101EE0A0 /* Pods_CardGameAR.framework */; };
 		F3020EE029F5927F0011F0CB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3020EDF29F5927F0011F0CB /* AppDelegate.swift */; };
 		F3020EE229F5927F0011F0CB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3020EE129F5927F0011F0CB /* ViewController.swift */; };
 		F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = F3020EE329F5927F0011F0CB /* Experience.rcproject */; };
@@ -17,10 +17,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		34680C9C3B2487F0D2E7C3D0 /* Pods-CaboAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CaboAR.debug.xcconfig"; path = "Target Support Files/Pods-CaboAR/Pods-CaboAR.debug.xcconfig"; sourceTree = "<group>"; };
-		585FB7BEACBEBB1974251C7F /* Pods-CaboAR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CaboAR.release.xcconfig"; path = "Target Support Files/Pods-CaboAR/Pods-CaboAR.release.xcconfig"; sourceTree = "<group>"; };
-		62F434960BF18295101EE0A0 /* Pods_CaboAR.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CaboAR.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3020EDC29F5927F0011F0CB /* CaboAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaboAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		34680C9C3B2487F0D2E7C3D0 /* Pods-CardGameAR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CardGameAR.debug.xcconfig"; path = "Target Support Files/Pods-CardGameAR/Pods-CardGameAR.debug.xcconfig"; sourceTree = "<group>"; };
+		585FB7BEACBEBB1974251C7F /* Pods-CardGameAR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CardGameAR.release.xcconfig"; path = "Target Support Files/Pods-CardGameAR/Pods-CardGameAR.release.xcconfig"; sourceTree = "<group>"; };
+		62F434960BF18295101EE0A0 /* Pods_CardGameAR.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CardGameAR.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3020EDC29F5927F0011F0CB /* CardGameAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardGameAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3020EDF29F5927F0011F0CB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F3020EE129F5927F0011F0CB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F3020EE329F5927F0011F0CB /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
@@ -34,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC646535CBE397E3554A50DA /* Pods_CaboAR.framework in Frameworks */,
+				BC646535CBE397E3554A50DA /* Pods_CardGameAR.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +44,7 @@
 		38780F1C2FD3E770B176A416 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				62F434960BF18295101EE0A0 /* Pods_CaboAR.framework */,
+				62F434960BF18295101EE0A0 /* Pods_CardGameAR.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -52,8 +52,8 @@
 		737724E9C2CA645857E591D6 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				34680C9C3B2487F0D2E7C3D0 /* Pods-CaboAR.debug.xcconfig */,
-				585FB7BEACBEBB1974251C7F /* Pods-CaboAR.release.xcconfig */,
+				34680C9C3B2487F0D2E7C3D0 /* Pods-CardGameAR.debug.xcconfig */,
+				585FB7BEACBEBB1974251C7F /* Pods-CardGameAR.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 		F3020ED329F5927F0011F0CB = {
 			isa = PBXGroup;
 			children = (
-				F3020EDE29F5927F0011F0CB /* CaboAR */,
+				F3020EDE29F5927F0011F0CB /* CardGameAR */,
 				F3020EDD29F5927F0011F0CB /* Products */,
 				737724E9C2CA645857E591D6 /* Pods */,
 				38780F1C2FD3E770B176A416 /* Frameworks */,
@@ -71,12 +71,12 @@
 		F3020EDD29F5927F0011F0CB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F3020EDC29F5927F0011F0CB /* CaboAR.app */,
+				F3020EDC29F5927F0011F0CB /* CardGameAR.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F3020EDE29F5927F0011F0CB /* CaboAR */ = {
+		F3020EDE29F5927F0011F0CB /* CardGameAR */ = {
 			isa = PBXGroup;
 			children = (
 				F3020EF229F5BAC70011F0CB /* Resources */,
@@ -86,7 +86,7 @@
 				F3020EE829F592800011F0CB /* Assets.xcassets */,
 				F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */,
 			);
-			path = CaboAR;
+			path = CardGameAR;
 			sourceTree = "<group>";
 		};
 		F3020EF229F5BAC70011F0CB /* Resources */ = {
@@ -100,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F3020EDB29F5927F0011F0CB /* CaboAR */ = {
+		F3020EDB29F5927F0011F0CB /* CardGameAR */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F3020EEF29F592800011F0CB /* Build configuration list for PBXNativeTarget "CaboAR" */;
+			buildConfigurationList = F3020EEF29F592800011F0CB /* Build configuration list for PBXNativeTarget "CardGameAR" */;
 			buildPhases = (
 				48D2D61B68D8474FF1C66B4A /* [CP] Check Pods Manifest.lock */,
 				F3020ED829F5927F0011F0CB /* Sources */,
@@ -113,9 +113,9 @@
 			);
 			dependencies = (
 			);
-			name = CaboAR;
-			productName = CaboAR;
-			productReference = F3020EDC29F5927F0011F0CB /* CaboAR.app */;
+			name = CardGameAR;
+			productName = CardGameAR;
+			productReference = F3020EDC29F5927F0011F0CB /* CardGameAR.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -133,7 +133,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F3020ED729F5927F0011F0CB /* Build configuration list for PBXProject "CaboAR" */;
+			buildConfigurationList = F3020ED729F5927F0011F0CB /* Build configuration list for PBXProject "CardGameAR" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -146,7 +146,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F3020EDB29F5927F0011F0CB /* CaboAR */,
+				F3020EDB29F5927F0011F0CB /* CardGameAR */,
 			);
 		};
 /* End PBXProject section */
@@ -180,7 +180,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CaboAR-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-CardGameAR-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -330,7 +330,7 @@
 		};
 		F3020EF029F592800011F0CB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 34680C9C3B2487F0D2E7C3D0 /* Pods-CaboAR.debug.xcconfig */;
+			baseConfigurationReference = 34680C9C3B2487F0D2E7C3D0 /* Pods-CardGameAR.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -351,7 +351,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.CaboAR;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.htw-berlin.cardgame-ar";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -361,7 +361,7 @@
 		};
 		F3020EF129F592800011F0CB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 585FB7BEACBEBB1974251C7F /* Pods-CaboAR.release.xcconfig */;
+			baseConfigurationReference = 585FB7BEACBEBB1974251C7F /* Pods-CardGameAR.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -382,7 +382,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.CaboAR;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.htw-berlin.cardgame-ar";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -393,7 +393,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F3020ED729F5927F0011F0CB /* Build configuration list for PBXProject "CaboAR" */ = {
+		F3020ED729F5927F0011F0CB /* Build configuration list for PBXProject "CardGameAR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3020EED29F592800011F0CB /* Debug */,
@@ -402,7 +402,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F3020EEF29F592800011F0CB /* Build configuration list for PBXNativeTarget "CaboAR" */ = {
+		F3020EEF29F592800011F0CB /* Build configuration list for PBXNativeTarget "CardGameAR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3020EF029F592800011F0CB /* Debug */,
