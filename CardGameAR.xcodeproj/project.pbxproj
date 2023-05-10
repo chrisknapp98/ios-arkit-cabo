@@ -13,7 +13,8 @@
 		F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = F3020EE329F5927F0011F0CB /* Experience.rcproject */; };
 		F3020EE929F592800011F0CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3020EE829F592800011F0CB /* Assets.xcassets */; };
 		F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */; };
-		F3020EF429F5BAD60011F0CB /* robot_walk_idle.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F3020EF329F5BAD60011F0CB /* robot_walk_idle.usdz */; };
+		F35A49812A0BBFFC00635215 /* Playing_Cards_Standard.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */; };
+		F35A49832A0BCA8600635215 /* PlayingCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35A49822A0BCA8600635215 /* PlayingCards.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +27,8 @@
 		F3020EE329F5927F0011F0CB /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
 		F3020EE829F592800011F0CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3020EEB29F592800011F0CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F3020EF329F5BAD60011F0CB /* robot_walk_idle.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = robot_walk_idle.usdz; sourceTree = "<group>"; };
+		F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Cards_Standard.usdz; sourceTree = "<group>"; };
+		F35A49822A0BCA8600635215 /* PlayingCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayingCards.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 				F3020EE329F5927F0011F0CB /* Experience.rcproject */,
 				F3020EE829F592800011F0CB /* Assets.xcassets */,
 				F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */,
+				F35A49822A0BCA8600635215 /* PlayingCards.swift */,
 			);
 			path = CardGameAR;
 			sourceTree = "<group>";
@@ -92,7 +95,7 @@
 		F3020EF229F5BAC70011F0CB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F3020EF329F5BAD60011F0CB /* robot_walk_idle.usdz */,
+				F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -158,7 +161,7 @@
 			files = (
 				F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */,
 				F3020EE929F592800011F0CB /* Assets.xcassets in Resources */,
-				F3020EF429F5BAD60011F0CB /* robot_walk_idle.usdz in Resources */,
+				F35A49812A0BBFFC00635215 /* Playing_Cards_Standard.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,6 +199,7 @@
 			files = (
 				F3020EE229F5927F0011F0CB /* ViewController.swift in Sources */,
 				F3020EE029F5927F0011F0CB /* AppDelegate.swift in Sources */,
+				F35A49832A0BCA8600635215 /* PlayingCards.swift in Sources */,
 				F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

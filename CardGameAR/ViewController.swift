@@ -31,6 +31,7 @@ class ViewController: UIViewController {
     // MARK: - Object Placement
     
     func placeObject(named entityName: String, for anchor: ARAnchor) {
+        // TODO: no force unwrapping, also need to load the complete usdz file rather than just a single subcomponent
         let entity = try! ModelEntity.loadModel(named: entityName)
         
         entity.generateCollisionShapes(recursive: true)
@@ -48,7 +49,9 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: "robot_walk_idle", transform: firstResult.worldTransform)
+            let assetName = PlayingCards.blue(type: .spades(value: .ace)).assetName
+            print("AssetName: \(assetName)")
+            let anchor = ARAnchor(name: assetName, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
         } else {
             print("Object placement failed. Couldn't find a surface.")
@@ -64,7 +67,7 @@ extension ARView: ARCoachingOverlayViewDelegate {
         coachingOverlay.session = self.session
         coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         coachingOverlay.layer.position = CGPoint(x: self.bounds.size.width/2, y: self.bounds.size.height/2)
-        coachingOverlay.goal = .anyPlane
+        coachingOverlay.goal = .horizontalPlane
         self.addSubview(coachingOverlay)
     }
     
@@ -77,7 +80,8 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let anchorName = anchor.name, anchorName == "robot_walk_idle" {
+            let assetName = PlayingCards.blue(type: .spades(value: .ace)).assetName
+            if let anchorName = anchor.name, anchorName == assetName {
                 placeObject(named: anchorName, for: anchor)
             }
         }
