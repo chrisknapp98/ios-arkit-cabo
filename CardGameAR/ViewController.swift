@@ -32,8 +32,22 @@ class ViewController: UIViewController {
         ])
         arView.session.delegate = self
         arView.addCoaching()
-        
+        arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
+        runOcclusionConfiguration()
         arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+    }
+    
+    private func runOcclusionConfiguration() {
+        arView.environment.sceneUnderstanding.options.insert(.occlusion)
+        let configuration = ARWorldTrackingConfiguration()
+        if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+            configuration.frameSemantics.insert(.sceneDepth) // crashes on iPhone 11
+        }
+        // disabled because it's not applied although it seems to be available on iPhone 11
+//        if ARConfiguration.supportsFrameSemantics(.personSegmentationWithDepth) {
+        configuration.frameSemantics.insert(.personSegmentationWithDepth)
+//        }
+        arView.session.run(configuration)
     }
     
     // MARK: - Object Placement
