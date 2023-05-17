@@ -12,7 +12,11 @@ import RealityKit
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
+    
+    // MARK: - Constants
+    
     private let modelFileName = "Playing_Cards_Standard"
+    private let modelScaleFactor: Float = 0.01
     
     // MARK: - Life Cycle
     
@@ -35,9 +39,12 @@ class ViewController: UIViewController {
     // MARK: - Object Placement
     
     func placeObject(named entityName: String, for anchor: ARAnchor) {
-        // TODO: no force unwrapping, also need to load the complete usdz file rather than just a single subcomponent
-        let modelEntity = try! ModelEntity.loadModel(named: entityName)
-        let scaleFactor: Float = 0.01 // Adjust this value to scale the object down
+        guard let modelEntity = try? ModelEntity.loadModel(named: entityName)
+        else {
+           print("Couldn't load model for entity name \(entityName)")
+            return
+        }
+        let scaleFactor: Float = modelScaleFactor
         modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
         
         modelEntity.generateCollisionShapes(recursive: true)
@@ -55,8 +62,6 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let assetName = PlayingCards.blue(type: .spades(value: .ace)).assetName
-            print("AssetName: \(assetName)")
             let anchor = ARAnchor(name: modelFileName, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
         } else {
@@ -79,7 +84,8 @@ extension ARView: ARCoachingOverlayViewDelegate {
     }
     
     public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        //Ready to add entities next?
+        // Ready to add entities next?
+        // Maybe automatically add the card deck in the middle of the table after a surface has been identified
     }
 }
 
