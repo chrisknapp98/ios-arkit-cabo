@@ -12,6 +12,9 @@ import RealityKit
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
+    private let modelFileName = "Playing_Cards_Standard"
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,17 +31,20 @@ class ViewController: UIViewController {
         
         arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
     }
+    
     // MARK: - Object Placement
     
     func placeObject(named entityName: String, for anchor: ARAnchor) {
         // TODO: no force unwrapping, also need to load the complete usdz file rather than just a single subcomponent
-        let entity = try! ModelEntity.loadModel(named: entityName)
+        let modelEntity = try! ModelEntity.loadModel(named: entityName)
+        let scaleFactor: Float = 0.01 // Adjust this value to scale the object down
+        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
         
-        entity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: entity)
+        modelEntity.generateCollisionShapes(recursive: true)
+        arView.installGestures([.rotation, .translation], for: modelEntity)
         
         let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(entity)
+        anchorEntity.addChild(modelEntity)
         arView.scene.addAnchor(anchorEntity)
     }
     
@@ -51,7 +57,7 @@ class ViewController: UIViewController {
         if let firstResult = results.first {
             let assetName = PlayingCards.blue(type: .spades(value: .ace)).assetName
             print("AssetName: \(assetName)")
-            let anchor = ARAnchor(name: assetName, transform: firstResult.worldTransform)
+            let anchor = ARAnchor(name: modelFileName, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
         } else {
             print("Object placement failed. Couldn't find a surface.")
@@ -60,6 +66,7 @@ class ViewController: UIViewController {
 }
 
 // MARK: - ARView Coaching Overlay
+
 extension ARView: ARCoachingOverlayViewDelegate {
     func addCoaching() {
         let coachingOverlay = ARCoachingOverlayView()
@@ -77,11 +84,11 @@ extension ARView: ARCoachingOverlayViewDelegate {
 }
 
 // MARK: - ARSessionDelegate
+
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            let assetName = PlayingCards.blue(type: .spades(value: .ace)).assetName
-            if let anchorName = anchor.name, anchorName == assetName {
+            if let anchorName = anchor.name, anchorName == modelFileName {
                 placeObject(named: anchorName, for: anchor)
             }
         }
