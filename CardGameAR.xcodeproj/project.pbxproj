@@ -15,7 +15,61 @@
 		F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */; };
 		F35A49812A0BBFFC00635215 /* Playing_Cards_Standard.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */; };
 		F35A49832A0BCA8600635215 /* PlayingCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35A49822A0BCA8600635215 /* PlayingCards.swift */; };
-		F372470D2A16EB4500580BC6 /* Playing_Card_Blue_S_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372470C2A16E58700580BC6 /* Playing_Card_Blue_S_A.usdz */; };
+		F37247502A17E18A00580BC6 /* Playing_Card_Blue_S_4.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247192A17E17400580BC6 /* Playing_Card_Blue_S_4.usdz */; };
+		F37247512A17E18A00580BC6 /* Playing_Card_Blue_C_Q.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471A2A17E17400580BC6 /* Playing_Card_Blue_C_Q.usdz */; };
+		F37247522A17E18A00580BC6 /* Playing_Card_Blue_H_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471B2A17E17500580BC6 /* Playing_Card_Blue_H_6.usdz */; };
+		F37247532A17E18A00580BC6 /* Playing_Card_Blue_D_Q.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471C2A17E17500580BC6 /* Playing_Card_Blue_D_Q.usdz */; };
+		F37247542A17E18A00580BC6 /* Playing_Card_Blue_D_3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471D2A17E17600580BC6 /* Playing_Card_Blue_D_3.usdz */; };
+		F37247552A17E18A00580BC6 /* Playing_Card_Blue_C_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471E2A17E17600580BC6 /* Playing_Card_Blue_C_A.usdz */; };
+		F37247562A17E18A00580BC6 /* Playing_Card_Blue_S_7.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372471F2A17E17600580BC6 /* Playing_Card_Blue_S_7.usdz */; };
+		F37247572A17E18A00580BC6 /* Playing_Card_Blue_S_5.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247202A17E17700580BC6 /* Playing_Card_Blue_S_5.usdz */; };
+		F37247582A17E18A00580BC6 /* Playing_Card_Blue_C_5.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247212A17E17700580BC6 /* Playing_Card_Blue_C_5.usdz */; };
+		F37247592A17E18A00580BC6 /* Playing_Card_Blue_C_9.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247222A17E17800580BC6 /* Playing_Card_Blue_C_9.usdz */; };
+		F372475A2A17E18A00580BC6 /* Playing_Card_Blue_H_10.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247232A17E17800580BC6 /* Playing_Card_Blue_H_10.usdz */; };
+		F372475B2A17E18A00580BC6 /* Playing_Card_Blue_H_3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247242A17E17900580BC6 /* Playing_Card_Blue_H_3.usdz */; };
+		F372475C2A17E18A00580BC6 /* Playing_Card_Blue_Joker_02.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247252A17E17900580BC6 /* Playing_Card_Blue_Joker_02.usdz */; };
+		F372475D2A17E18A00580BC6 /* Playing_Card_Blue_D_2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247262A17E17900580BC6 /* Playing_Card_Blue_D_2.usdz */; };
+		F372475E2A17E18A00580BC6 /* Playing_Card_Blue_C_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247272A17E17A00580BC6 /* Playing_Card_Blue_C_6.usdz */; };
+		F372475F2A17E18A00580BC6 /* Playing_Card_Blue_H_2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247282A17E17A00580BC6 /* Playing_Card_Blue_H_2.usdz */; };
+		F37247602A17E18A00580BC6 /* Playing_Card_Blue_C_J.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247292A17E17B00580BC6 /* Playing_Card_Blue_C_J.usdz */; };
+		F37247612A17E18A00580BC6 /* Playing_Card_Blue_C_K.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472A2A17E17B00580BC6 /* Playing_Card_Blue_C_K.usdz */; };
+		F37247622A17E18A00580BC6 /* Playing_Card_Blue_S_3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472B2A17E17B00580BC6 /* Playing_Card_Blue_S_3.usdz */; };
+		F37247632A17E18A00580BC6 /* Playing_Card_Blue_S_10.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472C2A17E17C00580BC6 /* Playing_Card_Blue_S_10.usdz */; };
+		F37247642A17E18A00580BC6 /* Playing_Card_Blue_D_J.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472D2A17E17C00580BC6 /* Playing_Card_Blue_D_J.usdz */; };
+		F37247652A17E18A00580BC6 /* Playing_Card_Blue_D_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472E2A17E17D00580BC6 /* Playing_Card_Blue_D_6.usdz */; };
+		F37247662A17E18A00580BC6 /* Playing_Card_Blue_D_7.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372472F2A17E17D00580BC6 /* Playing_Card_Blue_D_7.usdz */; };
+		F37247672A17E18A00580BC6 /* Playing_Card_Blue_H_5.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247302A17E17D00580BC6 /* Playing_Card_Blue_H_5.usdz */; };
+		F37247682A17E18A00580BC6 /* Playing_Card_Box_Blue.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247312A17E17E00580BC6 /* Playing_Card_Box_Blue.usdz */; };
+		F37247692A17E18A00580BC6 /* Playing_Card_Blue_D_10.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247322A17E17E00580BC6 /* Playing_Card_Blue_D_10.usdz */; };
+		F372476A2A17E18A00580BC6 /* Playing_Card_Blue_H_K.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247332A17E17F00580BC6 /* Playing_Card_Blue_H_K.usdz */; };
+		F372476B2A17E18A00580BC6 /* Playing_Card_Blue_H_4.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247342A17E17F00580BC6 /* Playing_Card_Blue_H_4.usdz */; };
+		F372476C2A17E18A00580BC6 /* Playing_Card_Blue_D_8.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247352A17E18000580BC6 /* Playing_Card_Blue_D_8.usdz */; };
+		F372476D2A17E18A00580BC6 /* Playing_Card_Blue_S_2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247362A17E18000580BC6 /* Playing_Card_Blue_S_2.usdz */; };
+		F372476E2A17E18A00580BC6 /* Playing_Card_Blue_S_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247372A17E18000580BC6 /* Playing_Card_Blue_S_6.usdz */; };
+		F372476F2A17E18A00580BC6 /* Playing_Card_Blue_Joker_01.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247382A17E18100580BC6 /* Playing_Card_Blue_Joker_01.usdz */; };
+		F37247702A17E18A00580BC6 /* Playing_Card_Blue_C_7.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247392A17E18100580BC6 /* Playing_Card_Blue_C_7.usdz */; };
+		F37247712A17E18A00580BC6 /* Playing_Card_Blue_H_Q.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473A2A17E18200580BC6 /* Playing_Card_Blue_H_Q.usdz */; };
+		F37247722A17E18A00580BC6 /* Playing_Card_Blue_H_J.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473B2A17E18200580BC6 /* Playing_Card_Blue_H_J.usdz */; };
+		F37247732A17E18A00580BC6 /* Playing_Card_Blue_C_8.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473C2A17E18200580BC6 /* Playing_Card_Blue_C_8.usdz */; };
+		F37247742A17E18A00580BC6 /* Playing_Card_Blue_S_9.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473D2A17E18300580BC6 /* Playing_Card_Blue_S_9.usdz */; };
+		F37247752A17E18A00580BC6 /* Playing_Card_Blue_H_7.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473E2A17E18300580BC6 /* Playing_Card_Blue_H_7.usdz */; };
+		F37247762A17E18A00580BC6 /* Playing_Card_Blue_S_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372473F2A17E18400580BC6 /* Playing_Card_Blue_S_A.usdz */; };
+		F37247772A17E18A00580BC6 /* Playing_Card_Blue_H_9.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247402A17E18400580BC6 /* Playing_Card_Blue_H_9.usdz */; };
+		F37247782A17E18A00580BC6 /* Playing_Card_Blue_D_5.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247412A17E18400580BC6 /* Playing_Card_Blue_D_5.usdz */; };
+		F37247792A17E18A00580BC6 /* Playing_Card_Blue_S_Q.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247422A17E18500580BC6 /* Playing_Card_Blue_S_Q.usdz */; };
+		F372477A2A17E18A00580BC6 /* Playing_Card_Blue_S_8.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247432A17E18500580BC6 /* Playing_Card_Blue_S_8.usdz */; };
+		F372477B2A17E18A00580BC6 /* Playing_Card_Blue_C_10.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247442A17E18600580BC6 /* Playing_Card_Blue_C_10.usdz */; };
+		F372477C2A17E18A00580BC6 /* Playing_Card_Blue_S_K.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247452A17E18600580BC6 /* Playing_Card_Blue_S_K.usdz */; };
+		F372477D2A17E18A00580BC6 /* Playing_Card_Blue_D_K.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247462A17E18600580BC6 /* Playing_Card_Blue_D_K.usdz */; };
+		F372477E2A17E18A00580BC6 /* Playing_Card_Blue_S_J.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247472A17E18700580BC6 /* Playing_Card_Blue_S_J.usdz */; };
+		F372477F2A17E18A00580BC6 /* Playing_Card_Blue_D_9.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247482A17E18700580BC6 /* Playing_Card_Blue_D_9.usdz */; };
+		F37247802A17E18A00580BC6 /* Playing_Card_Blue_C_3.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37247492A17E18800580BC6 /* Playing_Card_Blue_C_3.usdz */; };
+		F37247812A17E18A00580BC6 /* Playing_Card_Blue_C_4.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474A2A17E18800580BC6 /* Playing_Card_Blue_C_4.usdz */; };
+		F37247822A17E18A00580BC6 /* Playing_Card_Blue_H_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474B2A17E18900580BC6 /* Playing_Card_Blue_H_A.usdz */; };
+		F37247832A17E18A00580BC6 /* Playing_Card_Blue_C_2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474C2A17E18900580BC6 /* Playing_Card_Blue_C_2.usdz */; };
+		F37247842A17E18A00580BC6 /* Playing_Card_Blue_D_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474D2A17E18900580BC6 /* Playing_Card_Blue_D_A.usdz */; };
+		F37247852A17E18A00580BC6 /* Playing_Card_Blue_H_8.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474E2A17E18A00580BC6 /* Playing_Card_Blue_H_8.usdz */; };
+		F37247862A17E18A00580BC6 /* Playing_Card_Blue_D_4.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F372474F2A17E18A00580BC6 /* Playing_Card_Blue_D_4.usdz */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,7 +84,61 @@
 		F3020EEB29F592800011F0CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Cards_Standard.usdz; sourceTree = "<group>"; };
 		F35A49822A0BCA8600635215 /* PlayingCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayingCards.swift; sourceTree = "<group>"; };
-		F372470C2A16E58700580BC6 /* Playing_Card_Blue_S_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_A.usdz; sourceTree = "<group>"; };
+		F37247192A17E17400580BC6 /* Playing_Card_Blue_S_4.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_4.usdz; sourceTree = "<group>"; };
+		F372471A2A17E17400580BC6 /* Playing_Card_Blue_C_Q.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_Q.usdz; sourceTree = "<group>"; };
+		F372471B2A17E17500580BC6 /* Playing_Card_Blue_H_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_6.usdz; sourceTree = "<group>"; };
+		F372471C2A17E17500580BC6 /* Playing_Card_Blue_D_Q.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_Q.usdz; sourceTree = "<group>"; };
+		F372471D2A17E17600580BC6 /* Playing_Card_Blue_D_3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_3.usdz; sourceTree = "<group>"; };
+		F372471E2A17E17600580BC6 /* Playing_Card_Blue_C_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_A.usdz; sourceTree = "<group>"; };
+		F372471F2A17E17600580BC6 /* Playing_Card_Blue_S_7.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_7.usdz; sourceTree = "<group>"; };
+		F37247202A17E17700580BC6 /* Playing_Card_Blue_S_5.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_5.usdz; sourceTree = "<group>"; };
+		F37247212A17E17700580BC6 /* Playing_Card_Blue_C_5.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_5.usdz; sourceTree = "<group>"; };
+		F37247222A17E17800580BC6 /* Playing_Card_Blue_C_9.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_9.usdz; sourceTree = "<group>"; };
+		F37247232A17E17800580BC6 /* Playing_Card_Blue_H_10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_10.usdz; sourceTree = "<group>"; };
+		F37247242A17E17900580BC6 /* Playing_Card_Blue_H_3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_3.usdz; sourceTree = "<group>"; };
+		F37247252A17E17900580BC6 /* Playing_Card_Blue_Joker_02.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_Joker_02.usdz; sourceTree = "<group>"; };
+		F37247262A17E17900580BC6 /* Playing_Card_Blue_D_2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_2.usdz; sourceTree = "<group>"; };
+		F37247272A17E17A00580BC6 /* Playing_Card_Blue_C_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_6.usdz; sourceTree = "<group>"; };
+		F37247282A17E17A00580BC6 /* Playing_Card_Blue_H_2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_2.usdz; sourceTree = "<group>"; };
+		F37247292A17E17B00580BC6 /* Playing_Card_Blue_C_J.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_J.usdz; sourceTree = "<group>"; };
+		F372472A2A17E17B00580BC6 /* Playing_Card_Blue_C_K.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_K.usdz; sourceTree = "<group>"; };
+		F372472B2A17E17B00580BC6 /* Playing_Card_Blue_S_3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_3.usdz; sourceTree = "<group>"; };
+		F372472C2A17E17C00580BC6 /* Playing_Card_Blue_S_10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_10.usdz; sourceTree = "<group>"; };
+		F372472D2A17E17C00580BC6 /* Playing_Card_Blue_D_J.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_J.usdz; sourceTree = "<group>"; };
+		F372472E2A17E17D00580BC6 /* Playing_Card_Blue_D_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_6.usdz; sourceTree = "<group>"; };
+		F372472F2A17E17D00580BC6 /* Playing_Card_Blue_D_7.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_7.usdz; sourceTree = "<group>"; };
+		F37247302A17E17D00580BC6 /* Playing_Card_Blue_H_5.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_5.usdz; sourceTree = "<group>"; };
+		F37247312A17E17E00580BC6 /* Playing_Card_Box_Blue.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Box_Blue.usdz; sourceTree = "<group>"; };
+		F37247322A17E17E00580BC6 /* Playing_Card_Blue_D_10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_10.usdz; sourceTree = "<group>"; };
+		F37247332A17E17F00580BC6 /* Playing_Card_Blue_H_K.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_K.usdz; sourceTree = "<group>"; };
+		F37247342A17E17F00580BC6 /* Playing_Card_Blue_H_4.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_4.usdz; sourceTree = "<group>"; };
+		F37247352A17E18000580BC6 /* Playing_Card_Blue_D_8.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_8.usdz; sourceTree = "<group>"; };
+		F37247362A17E18000580BC6 /* Playing_Card_Blue_S_2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_2.usdz; sourceTree = "<group>"; };
+		F37247372A17E18000580BC6 /* Playing_Card_Blue_S_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_6.usdz; sourceTree = "<group>"; };
+		F37247382A17E18100580BC6 /* Playing_Card_Blue_Joker_01.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_Joker_01.usdz; sourceTree = "<group>"; };
+		F37247392A17E18100580BC6 /* Playing_Card_Blue_C_7.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_7.usdz; sourceTree = "<group>"; };
+		F372473A2A17E18200580BC6 /* Playing_Card_Blue_H_Q.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_Q.usdz; sourceTree = "<group>"; };
+		F372473B2A17E18200580BC6 /* Playing_Card_Blue_H_J.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_J.usdz; sourceTree = "<group>"; };
+		F372473C2A17E18200580BC6 /* Playing_Card_Blue_C_8.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_8.usdz; sourceTree = "<group>"; };
+		F372473D2A17E18300580BC6 /* Playing_Card_Blue_S_9.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_9.usdz; sourceTree = "<group>"; };
+		F372473E2A17E18300580BC6 /* Playing_Card_Blue_H_7.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_7.usdz; sourceTree = "<group>"; };
+		F372473F2A17E18400580BC6 /* Playing_Card_Blue_S_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_A.usdz; sourceTree = "<group>"; };
+		F37247402A17E18400580BC6 /* Playing_Card_Blue_H_9.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_9.usdz; sourceTree = "<group>"; };
+		F37247412A17E18400580BC6 /* Playing_Card_Blue_D_5.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_5.usdz; sourceTree = "<group>"; };
+		F37247422A17E18500580BC6 /* Playing_Card_Blue_S_Q.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_Q.usdz; sourceTree = "<group>"; };
+		F37247432A17E18500580BC6 /* Playing_Card_Blue_S_8.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_8.usdz; sourceTree = "<group>"; };
+		F37247442A17E18600580BC6 /* Playing_Card_Blue_C_10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_10.usdz; sourceTree = "<group>"; };
+		F37247452A17E18600580BC6 /* Playing_Card_Blue_S_K.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_K.usdz; sourceTree = "<group>"; };
+		F37247462A17E18600580BC6 /* Playing_Card_Blue_D_K.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_K.usdz; sourceTree = "<group>"; };
+		F37247472A17E18700580BC6 /* Playing_Card_Blue_S_J.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_J.usdz; sourceTree = "<group>"; };
+		F37247482A17E18700580BC6 /* Playing_Card_Blue_D_9.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_9.usdz; sourceTree = "<group>"; };
+		F37247492A17E18800580BC6 /* Playing_Card_Blue_C_3.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_3.usdz; sourceTree = "<group>"; };
+		F372474A2A17E18800580BC6 /* Playing_Card_Blue_C_4.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_4.usdz; sourceTree = "<group>"; };
+		F372474B2A17E18900580BC6 /* Playing_Card_Blue_H_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_A.usdz; sourceTree = "<group>"; };
+		F372474C2A17E18900580BC6 /* Playing_Card_Blue_C_2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_C_2.usdz; sourceTree = "<group>"; };
+		F372474D2A17E18900580BC6 /* Playing_Card_Blue_D_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_A.usdz; sourceTree = "<group>"; };
+		F372474E2A17E18A00580BC6 /* Playing_Card_Blue_H_8.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_H_8.usdz; sourceTree = "<group>"; };
+		F372474F2A17E18A00580BC6 /* Playing_Card_Blue_D_4.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_D_4.usdz; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,10 +205,112 @@
 		F3020EF229F5BAC70011F0CB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F37247182A17DBC000580BC6 /* Blue */,
 				F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */,
-				F372470C2A16E58700580BC6 /* Playing_Card_Blue_S_A.usdz */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		F37247182A17DBC000580BC6 /* Blue */ = {
+			isa = PBXGroup;
+			children = (
+				F372478B2A17E23000580BC6 /* Joker */,
+				F372478A2A17E21A00580BC6 /* Spades */,
+				F37247892A17E20400580BC6 /* Hearts */,
+				F37247882A17E1EE00580BC6 /* Diamonds */,
+				F37247872A17E19C00580BC6 /* Clubs */,
+				F37247312A17E17E00580BC6 /* Playing_Card_Box_Blue.usdz */,
+			);
+			path = Blue;
+			sourceTree = "<group>";
+		};
+		F37247872A17E19C00580BC6 /* Clubs */ = {
+			isa = PBXGroup;
+			children = (
+				F372474C2A17E18900580BC6 /* Playing_Card_Blue_C_2.usdz */,
+				F37247492A17E18800580BC6 /* Playing_Card_Blue_C_3.usdz */,
+				F372474A2A17E18800580BC6 /* Playing_Card_Blue_C_4.usdz */,
+				F37247212A17E17700580BC6 /* Playing_Card_Blue_C_5.usdz */,
+				F37247272A17E17A00580BC6 /* Playing_Card_Blue_C_6.usdz */,
+				F37247392A17E18100580BC6 /* Playing_Card_Blue_C_7.usdz */,
+				F372473C2A17E18200580BC6 /* Playing_Card_Blue_C_8.usdz */,
+				F37247222A17E17800580BC6 /* Playing_Card_Blue_C_9.usdz */,
+				F37247442A17E18600580BC6 /* Playing_Card_Blue_C_10.usdz */,
+				F372471E2A17E17600580BC6 /* Playing_Card_Blue_C_A.usdz */,
+				F37247292A17E17B00580BC6 /* Playing_Card_Blue_C_J.usdz */,
+				F372472A2A17E17B00580BC6 /* Playing_Card_Blue_C_K.usdz */,
+				F372471A2A17E17400580BC6 /* Playing_Card_Blue_C_Q.usdz */,
+			);
+			path = Clubs;
+			sourceTree = "<group>";
+		};
+		F37247882A17E1EE00580BC6 /* Diamonds */ = {
+			isa = PBXGroup;
+			children = (
+				F37247262A17E17900580BC6 /* Playing_Card_Blue_D_2.usdz */,
+				F372471D2A17E17600580BC6 /* Playing_Card_Blue_D_3.usdz */,
+				F372474F2A17E18A00580BC6 /* Playing_Card_Blue_D_4.usdz */,
+				F37247412A17E18400580BC6 /* Playing_Card_Blue_D_5.usdz */,
+				F372472E2A17E17D00580BC6 /* Playing_Card_Blue_D_6.usdz */,
+				F372472F2A17E17D00580BC6 /* Playing_Card_Blue_D_7.usdz */,
+				F37247352A17E18000580BC6 /* Playing_Card_Blue_D_8.usdz */,
+				F37247482A17E18700580BC6 /* Playing_Card_Blue_D_9.usdz */,
+				F37247322A17E17E00580BC6 /* Playing_Card_Blue_D_10.usdz */,
+				F372474D2A17E18900580BC6 /* Playing_Card_Blue_D_A.usdz */,
+				F372472D2A17E17C00580BC6 /* Playing_Card_Blue_D_J.usdz */,
+				F37247462A17E18600580BC6 /* Playing_Card_Blue_D_K.usdz */,
+				F372471C2A17E17500580BC6 /* Playing_Card_Blue_D_Q.usdz */,
+			);
+			path = Diamonds;
+			sourceTree = "<group>";
+		};
+		F37247892A17E20400580BC6 /* Hearts */ = {
+			isa = PBXGroup;
+			children = (
+				F37247282A17E17A00580BC6 /* Playing_Card_Blue_H_2.usdz */,
+				F37247242A17E17900580BC6 /* Playing_Card_Blue_H_3.usdz */,
+				F37247342A17E17F00580BC6 /* Playing_Card_Blue_H_4.usdz */,
+				F37247302A17E17D00580BC6 /* Playing_Card_Blue_H_5.usdz */,
+				F372471B2A17E17500580BC6 /* Playing_Card_Blue_H_6.usdz */,
+				F372473E2A17E18300580BC6 /* Playing_Card_Blue_H_7.usdz */,
+				F372474E2A17E18A00580BC6 /* Playing_Card_Blue_H_8.usdz */,
+				F37247402A17E18400580BC6 /* Playing_Card_Blue_H_9.usdz */,
+				F37247232A17E17800580BC6 /* Playing_Card_Blue_H_10.usdz */,
+				F372474B2A17E18900580BC6 /* Playing_Card_Blue_H_A.usdz */,
+				F372473B2A17E18200580BC6 /* Playing_Card_Blue_H_J.usdz */,
+				F37247332A17E17F00580BC6 /* Playing_Card_Blue_H_K.usdz */,
+				F372473A2A17E18200580BC6 /* Playing_Card_Blue_H_Q.usdz */,
+			);
+			path = Hearts;
+			sourceTree = "<group>";
+		};
+		F372478A2A17E21A00580BC6 /* Spades */ = {
+			isa = PBXGroup;
+			children = (
+				F37247362A17E18000580BC6 /* Playing_Card_Blue_S_2.usdz */,
+				F372472B2A17E17B00580BC6 /* Playing_Card_Blue_S_3.usdz */,
+				F37247192A17E17400580BC6 /* Playing_Card_Blue_S_4.usdz */,
+				F37247202A17E17700580BC6 /* Playing_Card_Blue_S_5.usdz */,
+				F37247372A17E18000580BC6 /* Playing_Card_Blue_S_6.usdz */,
+				F372471F2A17E17600580BC6 /* Playing_Card_Blue_S_7.usdz */,
+				F37247432A17E18500580BC6 /* Playing_Card_Blue_S_8.usdz */,
+				F372473D2A17E18300580BC6 /* Playing_Card_Blue_S_9.usdz */,
+				F372472C2A17E17C00580BC6 /* Playing_Card_Blue_S_10.usdz */,
+				F372473F2A17E18400580BC6 /* Playing_Card_Blue_S_A.usdz */,
+				F37247472A17E18700580BC6 /* Playing_Card_Blue_S_J.usdz */,
+				F37247452A17E18600580BC6 /* Playing_Card_Blue_S_K.usdz */,
+				F37247422A17E18500580BC6 /* Playing_Card_Blue_S_Q.usdz */,
+			);
+			path = Spades;
+			sourceTree = "<group>";
+		};
+		F372478B2A17E23000580BC6 /* Joker */ = {
+			isa = PBXGroup;
+			children = (
+				F37247382A17E18100580BC6 /* Playing_Card_Blue_Joker_01.usdz */,
+				F37247252A17E17900580BC6 /* Playing_Card_Blue_Joker_02.usdz */,
+			);
+			path = Joker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,10 +372,64 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F372470D2A16EB4500580BC6 /* Playing_Card_Blue_S_A.usdz in Resources */,
+				F37247522A17E18A00580BC6 /* Playing_Card_Blue_H_6.usdz in Resources */,
+				F37247782A17E18A00580BC6 /* Playing_Card_Blue_D_5.usdz in Resources */,
+				F37247552A17E18A00580BC6 /* Playing_Card_Blue_C_A.usdz in Resources */,
+				F372477A2A17E18A00580BC6 /* Playing_Card_Blue_S_8.usdz in Resources */,
+				F37247812A17E18A00580BC6 /* Playing_Card_Blue_C_4.usdz in Resources */,
+				F37247722A17E18A00580BC6 /* Playing_Card_Blue_H_J.usdz in Resources */,
+				F372475C2A17E18A00580BC6 /* Playing_Card_Blue_Joker_02.usdz in Resources */,
+				F37247612A17E18A00580BC6 /* Playing_Card_Blue_C_K.usdz in Resources */,
+				F37247622A17E18A00580BC6 /* Playing_Card_Blue_S_3.usdz in Resources */,
 				F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */,
+				F37247512A17E18A00580BC6 /* Playing_Card_Blue_C_Q.usdz in Resources */,
+				F37247772A17E18A00580BC6 /* Playing_Card_Blue_H_9.usdz in Resources */,
+				F37247602A17E18A00580BC6 /* Playing_Card_Blue_C_J.usdz in Resources */,
 				F3020EE929F592800011F0CB /* Assets.xcassets in Resources */,
+				F372477E2A17E18A00580BC6 /* Playing_Card_Blue_S_J.usdz in Resources */,
+				F37247662A17E18A00580BC6 /* Playing_Card_Blue_D_7.usdz in Resources */,
+				F372477C2A17E18A00580BC6 /* Playing_Card_Blue_S_K.usdz in Resources */,
+				F37247822A17E18A00580BC6 /* Playing_Card_Blue_H_A.usdz in Resources */,
 				F35A49812A0BBFFC00635215 /* Playing_Cards_Standard.usdz in Resources */,
+				F372475B2A17E18A00580BC6 /* Playing_Card_Blue_H_3.usdz in Resources */,
+				F37247862A17E18A00580BC6 /* Playing_Card_Blue_D_4.usdz in Resources */,
+				F37247752A17E18A00580BC6 /* Playing_Card_Blue_H_7.usdz in Resources */,
+				F37247842A17E18A00580BC6 /* Playing_Card_Blue_D_A.usdz in Resources */,
+				F37247592A17E18A00580BC6 /* Playing_Card_Blue_C_9.usdz in Resources */,
+				F372477B2A17E18A00580BC6 /* Playing_Card_Blue_C_10.usdz in Resources */,
+				F372476A2A17E18A00580BC6 /* Playing_Card_Blue_H_K.usdz in Resources */,
+				F37247572A17E18A00580BC6 /* Playing_Card_Blue_S_5.usdz in Resources */,
+				F37247632A17E18A00580BC6 /* Playing_Card_Blue_S_10.usdz in Resources */,
+				F37247672A17E18A00580BC6 /* Playing_Card_Blue_H_5.usdz in Resources */,
+				F37247562A17E18A00580BC6 /* Playing_Card_Blue_S_7.usdz in Resources */,
+				F37247802A17E18A00580BC6 /* Playing_Card_Blue_C_3.usdz in Resources */,
+				F37247582A17E18A00580BC6 /* Playing_Card_Blue_C_5.usdz in Resources */,
+				F372475D2A17E18A00580BC6 /* Playing_Card_Blue_D_2.usdz in Resources */,
+				F372475A2A17E18A00580BC6 /* Playing_Card_Blue_H_10.usdz in Resources */,
+				F37247692A17E18A00580BC6 /* Playing_Card_Blue_D_10.usdz in Resources */,
+				F37247832A17E18A00580BC6 /* Playing_Card_Blue_C_2.usdz in Resources */,
+				F37247532A17E18A00580BC6 /* Playing_Card_Blue_D_Q.usdz in Resources */,
+				F37247852A17E18A00580BC6 /* Playing_Card_Blue_H_8.usdz in Resources */,
+				F372476F2A17E18A00580BC6 /* Playing_Card_Blue_Joker_01.usdz in Resources */,
+				F37247502A17E18A00580BC6 /* Playing_Card_Blue_S_4.usdz in Resources */,
+				F372477F2A17E18A00580BC6 /* Playing_Card_Blue_D_9.usdz in Resources */,
+				F37247682A17E18A00580BC6 /* Playing_Card_Box_Blue.usdz in Resources */,
+				F372477D2A17E18A00580BC6 /* Playing_Card_Blue_D_K.usdz in Resources */,
+				F37247702A17E18A00580BC6 /* Playing_Card_Blue_C_7.usdz in Resources */,
+				F37247742A17E18A00580BC6 /* Playing_Card_Blue_S_9.usdz in Resources */,
+				F37247762A17E18A00580BC6 /* Playing_Card_Blue_S_A.usdz in Resources */,
+				F372476D2A17E18A00580BC6 /* Playing_Card_Blue_S_2.usdz in Resources */,
+				F37247712A17E18A00580BC6 /* Playing_Card_Blue_H_Q.usdz in Resources */,
+				F37247792A17E18A00580BC6 /* Playing_Card_Blue_S_Q.usdz in Resources */,
+				F37247542A17E18A00580BC6 /* Playing_Card_Blue_D_3.usdz in Resources */,
+				F372475F2A17E18A00580BC6 /* Playing_Card_Blue_H_2.usdz in Resources */,
+				F37247642A17E18A00580BC6 /* Playing_Card_Blue_D_J.usdz in Resources */,
+				F372476E2A17E18A00580BC6 /* Playing_Card_Blue_S_6.usdz in Resources */,
+				F372476C2A17E18A00580BC6 /* Playing_Card_Blue_D_8.usdz in Resources */,
+				F372476B2A17E18A00580BC6 /* Playing_Card_Blue_H_4.usdz in Resources */,
+				F37247652A17E18A00580BC6 /* Playing_Card_Blue_D_6.usdz in Resources */,
+				F37247732A17E18A00580BC6 /* Playing_Card_Blue_C_8.usdz in Resources */,
+				F372475E2A17E18A00580BC6 /* Playing_Card_Blue_C_6.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
