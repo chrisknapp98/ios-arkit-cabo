@@ -8,6 +8,7 @@
 import UIKit
 import ARKit
 import RealityKit
+import Combine
 
 class ViewController: UIViewController {
     
@@ -16,7 +17,9 @@ class ViewController: UIViewController {
     // MARK: - Constants
     
     private let modelFileName = "Playing_Cards_Standard"
+    private let drawPile = "draw_pile"
     private let modelScaleFactor: Float = 0.01
+    private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
     
     // MARK: - Life Cycle
     
@@ -35,6 +38,7 @@ class ViewController: UIViewController {
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
         arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+        preloadAllModelEntities()
     }
     
     private func runOcclusionConfiguration() {
@@ -50,23 +54,81 @@ class ViewController: UIViewController {
         arView.session.run(configuration)
     }
     
+    private func preloadAllModelEntities() {
+        [PlayingCards.CardValue.nine].forEach { cardValue in
+            let card = PlayingCards.blue(type: .spades(value: cardValue))
+            let task: Task<ModelEntity, Error> = Task {
+                try await loadModelAsync(named: card.assetName)
+            }
+            playingCardModels[card] = task
+        }
+        
+//        playingCardModels.keys.forEach { card in
+//            Task { try await playingCardModels[card]?.value }
+//        }
+    }
+    
+    private func loadModelAsync(named entityName: String) async throws -> ModelEntity {
+        return try await withCheckedThrowingContinuation { continuation in
+            ModelEntity.loadModelAsync(named: entityName)
+                .subscribe(
+                    Subscribers.Sink(
+                        receiveCompletion: { completion in
+                            switch completion {
+                            case .failure(let error):
+                                print("Couldn't load model for entity name \(entityName)")
+                                continuation.resume(throwing: error)
+                                break
+                            case .finished:
+                                break
+                            }
+                        }, receiveValue: { modelEntity in
+                            continuation.resume(returning: modelEntity)
+                        }
+                    )
+                )
+        }
+    }
+    
     // MARK: - Object Placement
     
-    func placeObject(named entityName: String, for anchor: ARAnchor) {
-        guard let modelEntity = try? ModelEntity.loadModel(named: entityName)
+    private func placeObject(named entityName: String, for anchor: ARAnchor, numberOfCardInPile: Int) async {
+        guard let modelEntity = try? await loadModelAsync(named: entityName)
         else {
-           print("Couldn't load model for entity name \(entityName)")
+            print("Couldn't load model for entity name \(entityName)")
             return
         }
         let scaleFactor: Float = modelScaleFactor
         modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        
+//        let spaceBetweenCards: Float = 0.04
+//        modelEntity.position.y += Float(numberOfCardInPile) * spaceBetweenCards
+//        modelEntity.position = SIMD3<Float>(x: 0, y: Float(numberOfCardInPile) * spaceBetweenCards, z: 0)
+//        modelEntity.move
         modelEntity.generateCollisionShapes(recursive: true)
         arView.installGestures([.rotation, .translation], for: modelEntity)
-        
         let anchorEntity = AnchorEntity(anchor: anchor)
         anchorEntity.addChild(modelEntity)
-        arView.scene.addAnchor(anchorEntity)
+        self.arView.scene.addAnchor(anchorEntity)
+    }
+    
+    private func placePreloadedModel(card: PlayingCards, for anchor: ARAnchor) async {
+        guard let entity = try? await playingCardModels[card]?.value
+        else {
+            print("Model is null or error")
+            return
+        }
+        let modelEntity = entity.clone(recursive: true)
+        let scaleFactor: Float = modelScaleFactor
+        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
+//        let spaceBetweenCards: Float = 0.04
+//        modelEntity.position.y += Float(numberOfCardInPile) * spaceBetweenCards
+//        modelEntity.position = SIMD3<Float>(x: 0, y: Float(numberOfCardInPile) * spaceBetweenCards, z: 0)
+//        modelEntity.move
+        modelEntity.generateCollisionShapes(recursive: true)
+        arView.installGestures([.rotation, .translation], for: modelEntity)
+        let anchorEntity = AnchorEntity(anchor: anchor)
+        anchorEntity.addChild(modelEntity)
+        self.arView.scene.addAnchor(anchorEntity)
     }
     
     // MARK: - Touch Interaction
@@ -76,7 +138,7 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: modelFileName, transform: firstResult.worldTransform)
+            let anchor = ARAnchor(name: drawPile, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
@@ -112,8 +174,10 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let anchorName = anchor.name, anchorName == modelFileName {
-                placeObject(named: anchorName, for: anchor)
+            if let anchorName = anchor.name, anchorName == drawPile {
+                let cardValue = PlayingCards.CardValue.allCases.randomElement() ?? PlayingCards.CardValue.nine
+                let card = PlayingCards.blue(type: .spades(value: cardValue))
+                Task { await placePreloadedModel(card: card, for: anchor) }
             }
         }
     }

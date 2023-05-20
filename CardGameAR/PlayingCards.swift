@@ -5,18 +5,18 @@
 //  Created by Christopher Knapp on 10.05.23.
 //
 
-enum PlayingCards {
+enum PlayingCards: Hashable {
     case blue(type: CardType)
     case red(type: CardType)
     
-    enum CardType {
+    enum CardType: Hashable {
         case clubs(value: CardValue)
         case diamonds(value: CardValue)
         case hearts(value: CardValue)
         case spades(value: CardValue)
     }
     
-    enum CardValue: String {
+    enum CardValue: String, CaseIterable, Hashable {
         case two = "2"
         case three = "3"
         case four = "4"
