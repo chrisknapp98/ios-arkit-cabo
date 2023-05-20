@@ -78,8 +78,12 @@ class ViewController: UIViewController {
         if let firstResult = results.first {
             let anchor = ARAnchor(name: modelFileName, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
         } else {
             print("Object placement failed. Couldn't find a surface.")
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.error)
         }
     }
 }
