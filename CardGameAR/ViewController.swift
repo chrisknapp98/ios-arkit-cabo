@@ -55,6 +55,8 @@ class ViewController: UIViewController {
     }
     
     private func preloadAllModelEntities() {
+        // this crashes when loading different model entites vs loading x times the same one
+//        PlayingCards.CardValue.allCases.forEach { cardValue in
         [PlayingCards.CardValue.nine].forEach { cardValue in
             let card = PlayingCards.blue(type: .spades(value: cardValue))
             let task: Task<ModelEntity, Error> = Task {
