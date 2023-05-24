@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     private let modelFileName = "Playing_Cards_Standard"
     private let drawPile = "draw_pile"
-    private let modelScaleFactor: Float = 0.01
+    private let modelScaleFactor: Float = 1
     private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
     
     // MARK: - Life Cycle
@@ -55,10 +55,7 @@ class ViewController: UIViewController {
     }
     
     private func preloadAllModelEntities() {
-        // this crashes when loading different model entites vs loading x times the same one
-//        PlayingCards.CardValue.allCases.forEach { cardValue in
-        [PlayingCards.CardValue.nine].forEach { cardValue in
-            let card = PlayingCards.blue(type: .spades(value: cardValue))
+        PlayingCards.allBlueCards().forEach { card in
             let task: Task<ModelEntity, Error> = Task {
                 try await loadModelAsync(named: card.assetName)
             }
@@ -177,8 +174,7 @@ extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
             if let anchorName = anchor.name, anchorName == drawPile {
-                let cardValue = PlayingCards.CardValue.allCases.randomElement() ?? PlayingCards.CardValue.nine
-                let card = PlayingCards.blue(type: .spades(value: cardValue))
+                let card = PlayingCards.randomBlueCard()
                 Task { await placePreloadedModel(card: card, for: anchor) }
             }
         }
