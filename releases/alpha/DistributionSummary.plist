@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CardGameAR.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>1</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>56AF336F9505672A4BEBCF50B31A206277D17CFA</string>
+				<key>dateExpires</key>
+				<string>17.12.23</string>
+				<key>type</key>
+				<string>Apple Development</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>D89MCXTTT7.de.htw-berlin.cardgame-ar</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>D89MCXTTT7</string>
+				<key>get-task-allow</key>
+				<true/>
+			</dict>
+			<key>name</key>
+			<string>CardGameAR.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>6adb9cf9-49bb-461b-b8c3-3a78202c2335</string>
+				<key>dateExpires</key>
+				<string>25.05.24</string>
+				<key>name</key>
+				<string>iOS Team Provisioning Profile: de.htw-berlin.cardgame-ar</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>D89MCXTTT7</string>
+				<key>name</key>
+				<string>Christopher Knapp</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>1.0</string>
+		</dict>
+	</array>
+</dict>
+</plist>

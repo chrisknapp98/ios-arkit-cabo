@@ -1,0 +1,1 @@
+itms-services://?action=download-manifest&url=https://www.dropbox.com/s/4yaig5cq2eqozs4/manifest.plist?dl=0/
