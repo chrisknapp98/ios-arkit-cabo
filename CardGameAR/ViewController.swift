@@ -8,10 +8,19 @@
 import UIKit
 import ARKit
 import RealityKit
+import Combine
 
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
+    
+    // MARK: - Constants
+    
+    private let drawPile = "draw_pile"
+    private let modelScaleFactor: Float = 1
+    private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,20 +34,91 @@ class ViewController: UIViewController {
         ])
         arView.session.delegate = self
         arView.addCoaching()
-        
+        arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
+        runOcclusionConfiguration()
         arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+        preloadAllModelEntities()
     }
+    
+    private func runOcclusionConfiguration() {
+        arView.environment.sceneUnderstanding.options.insert(.occlusion)
+        let configuration = ARWorldTrackingConfiguration()
+        if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+            configuration.frameSemantics.insert(.sceneDepth) // crashes on iPhone 11
+        }
+        // disabled because it's not applied although it seems to be available on iPhone 11
+//        if ARConfiguration.supportsFrameSemantics(.personSegmentationWithDepth) {
+        configuration.frameSemantics.insert(.personSegmentationWithDepth)
+//        }
+        arView.session.run(configuration)
+    }
+    
+    private func preloadAllModelEntities() {
+        PlayingCards.allBlueCards().forEach { card in
+            let task: Task<ModelEntity, Error> = Task {
+                try await loadModelAsync(named: card.assetName)
+            }
+            playingCardModels[card] = task
+        }
+        
+//        playingCardModels.keys.forEach { card in
+//            Task { try await playingCardModels[card]?.value }
+//        }
+    }
+    
+    private func loadModelAsync(named entityName: String) async throws -> ModelEntity {
+        return try await withCheckedThrowingContinuation { continuation in
+            ModelEntity.loadModelAsync(named: entityName)
+                .subscribe(
+                    Subscribers.Sink(
+                        receiveCompletion: { completion in
+                            switch completion {
+                            case .failure(let error):
+                                print("Couldn't load model for entity name \(entityName)")
+                                continuation.resume(throwing: error)
+                                break
+                            case .finished:
+                                break
+                            }
+                        }, receiveValue: { modelEntity in
+                            continuation.resume(returning: modelEntity)
+                        }
+                    )
+                )
+        }
+    }
+    
     // MARK: - Object Placement
     
-    func placeObject(named entityName: String, for anchor: ARAnchor) {
-        let entity = try! ModelEntity.loadModel(named: entityName)
-        
-        entity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: entity)
-        
+    private func placeObject(named entityName: String, for anchor: ARAnchor, numberOfCardInPile: Int) async {
+        guard let modelEntity = try? await loadModelAsync(named: entityName)
+        else {
+            print("Couldn't load model for entity name \(entityName)")
+            return
+        }
+        let scaleFactor: Float = modelScaleFactor
+        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
+        modelEntity.generateCollisionShapes(recursive: true)
+        arView.installGestures([.rotation, .translation], for: modelEntity)
         let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(entity)
-        arView.scene.addAnchor(anchorEntity)
+        anchorEntity.addChild(modelEntity)
+        self.arView.scene.addAnchor(anchorEntity)
+    }
+    
+    private func placePreloadedModel(card: PlayingCards, for anchor: ARAnchor) async {
+        guard let entity = try? await playingCardModels[card]?.value
+        else {
+            print("Model is null or error")
+            return
+        }
+        let modelEntity = entity.clone(recursive: true)
+        let scaleFactor: Float = modelScaleFactor
+        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
+        modelEntity.generateCollisionShapes(recursive: true)
+        arView.installGestures([.rotation, .translation], for: modelEntity)
+        let anchorEntity = AnchorEntity(anchor: anchor)
+        anchorEntity.addChild(modelEntity)
+        self.arView.scene.addAnchor(anchorEntity)
     }
     
     // MARK: - Touch Interaction
@@ -48,15 +128,20 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: "robot_walk_idle", transform: firstResult.worldTransform)
+            let anchor = ARAnchor(name: drawPile, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
         } else {
             print("Object placement failed. Couldn't find a surface.")
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.error)
         }
     }
 }
 
 // MARK: - ARView Coaching Overlay
+
 extension ARView: ARCoachingOverlayViewDelegate {
     func addCoaching() {
         let coachingOverlay = ARCoachingOverlayView()
@@ -64,21 +149,24 @@ extension ARView: ARCoachingOverlayViewDelegate {
         coachingOverlay.session = self.session
         coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         coachingOverlay.layer.position = CGPoint(x: self.bounds.size.width/2, y: self.bounds.size.height/2)
-        coachingOverlay.goal = .anyPlane
+        coachingOverlay.goal = .horizontalPlane
         self.addSubview(coachingOverlay)
     }
     
     public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        //Ready to add entities next?
+        // Ready to add entities next?
+        // Maybe automatically add the card deck in the middle of the table after a surface has been identified
     }
 }
 
 // MARK: - ARSessionDelegate
+
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let anchorName = anchor.name, anchorName == "robot_walk_idle" {
-                placeObject(named: anchorName, for: anchor)
+            if let anchorName = anchor.name, anchorName == drawPile {
+                let card = PlayingCards.randomBlueCard()
+                Task { await placePreloadedModel(card: card, for: anchor) }
             }
         }
     }
