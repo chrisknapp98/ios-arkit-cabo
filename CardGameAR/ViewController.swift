@@ -16,7 +16,6 @@ class ViewController: UIViewController {
     
     // MARK: - Constants
     
-    private let modelFileName = "Playing_Cards_Standard"
     private let drawPile = "draw_pile"
     private let modelScaleFactor: Float = 1
     private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
