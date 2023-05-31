@@ -111,14 +111,26 @@ class ViewController: UIViewController {
             print("Model is null or error")
             return
         }
-        let modelEntity = entity.clone(recursive: true)
-        let scaleFactor: Float = modelScaleFactor
-        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        modelEntity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: modelEntity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(modelEntity)
-        self.arView.scene.addAnchor(anchorEntity)
+        for numberOfCardInPile in 0...4 {
+            print("AR placing model")
+            let originalTransform = anchor.transform
+            let modelEntity = entity.clone(recursive: true)
+            let scaleFactor: Float = modelScaleFactor
+            modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
+            let spaceBetweenCards: Float = 0.04
+            let yOffset = Float(numberOfCardInPile) * spaceBetweenCards
+            let translation = SIMD3<Float>(0, yOffset, 0)
+            var matrix = matrix_identity_float4x4
+            matrix.columns.3.x = translation.x
+            matrix.columns.3.y = translation.y
+            matrix.columns.3.z = translation.z
+            modelEntity.transform.matrix = matrix
+            modelEntity.generateCollisionShapes(recursive: true)
+            arView.installGestures([.rotation, .translation], for: modelEntity)
+            let anchorEntity = AnchorEntity(anchor: anchor)
+            anchorEntity.addChild(modelEntity)
+            self.arView.scene.addAnchor(anchorEntity)
+        }
     }
     
     // MARK: - Touch Interaction
