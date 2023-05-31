@@ -99,10 +99,6 @@ class ViewController: UIViewController {
         }
         let scaleFactor: Float = modelScaleFactor
         modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-//        let spaceBetweenCards: Float = 0.04
-//        modelEntity.position.y += Float(numberOfCardInPile) * spaceBetweenCards
-//        modelEntity.position = SIMD3<Float>(x: 0, y: Float(numberOfCardInPile) * spaceBetweenCards, z: 0)
-//        modelEntity.move
         modelEntity.generateCollisionShapes(recursive: true)
         arView.installGestures([.rotation, .translation], for: modelEntity)
         let anchorEntity = AnchorEntity(anchor: anchor)
@@ -119,10 +115,6 @@ class ViewController: UIViewController {
         let modelEntity = entity.clone(recursive: true)
         let scaleFactor: Float = modelScaleFactor
         modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-//        let spaceBetweenCards: Float = 0.04
-//        modelEntity.position.y += Float(numberOfCardInPile) * spaceBetweenCards
-//        modelEntity.position = SIMD3<Float>(x: 0, y: Float(numberOfCardInPile) * spaceBetweenCards, z: 0)
-//        modelEntity.move
         modelEntity.generateCollisionShapes(recursive: true)
         arView.installGestures([.rotation, .translation], for: modelEntity)
         let anchorEntity = AnchorEntity(anchor: anchor)
