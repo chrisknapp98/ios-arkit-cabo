@@ -13,6 +13,7 @@
 		F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = F3020EE329F5927F0011F0CB /* Experience.rcproject */; };
 		F3020EE929F592800011F0CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3020EE829F592800011F0CB /* Assets.xcassets */; };
 		F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */; };
+		F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */; };
 		F35A49812A0BBFFC00635215 /* Playing_Cards_Standard.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */; };
 		F35A49832A0BCA8600635215 /* PlayingCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35A49822A0BCA8600635215 /* PlayingCards.swift */; };
 		F37111E22A278291003F53F4 /* Playing_Cards.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37111E12A278291003F53F4 /* Playing_Cards.usdz */; };
@@ -82,6 +83,7 @@
 		F3020EE329F5927F0011F0CB /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
 		F3020EE829F592800011F0CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3020EEB29F592800011F0CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		F35A49802A0BBFFC00635215 /* Playing_Cards_Standard.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Cards_Standard.usdz; sourceTree = "<group>"; };
 		F35A49822A0BCA8600635215 /* PlayingCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayingCards.swift; sourceTree = "<group>"; };
 		F37111E12A278291003F53F4 /* Playing_Cards.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Cards.usdz; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				F3020EE829F592800011F0CB /* Assets.xcassets */,
 				F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */,
 				F35A49822A0BCA8600635215 /* PlayingCards.swift */,
+				F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */,
 			);
 			path = CardGameAR;
 			sourceTree = "<group>";
@@ -467,6 +470,7 @@
 			files = (
 				F3020EE229F5927F0011F0CB /* ViewController.swift in Sources */,
 				F3020EE029F5927F0011F0CB /* AppDelegate.swift in Sources */,
+				F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */,
 				F35A49832A0BCA8600635215 /* PlayingCards.swift in Sources */,
 				F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */,
 			);

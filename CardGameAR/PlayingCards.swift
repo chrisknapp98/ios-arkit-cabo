@@ -32,6 +32,8 @@ enum PlayingCards: Hashable {
         case ace = "A"
     }
     
+    static let thickness: Float = 0.00015
+    
     var assetName: String {
         let prefix = "Playing_Card_"
         switch self {
