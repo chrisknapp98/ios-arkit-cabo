@@ -122,6 +122,8 @@ class ViewController: UIViewController {
     }
     
     private func placeDrawPile(cards: [PlayingCards], for anchor: ARAnchor) async {
+        let parentEntity = ModelEntity()
+        parentEntity.name = drawPile
         await cards.enumerated().forEachAsync { [playingCardModels] numberOfCardInPile, card in
             guard let entity = try? await playingCardModels[card]?.value
             else {
@@ -129,6 +131,7 @@ class ViewController: UIViewController {
                 return
             }
             let modelEntity = entity.clone(recursive: true)
+            modelEntity.name = card.assetName
             let scaleFactor: Float = modelScaleFactor
             modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
             
@@ -146,11 +149,12 @@ class ViewController: UIViewController {
             modelEntity.transform.rotation *= simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1))
             
             modelEntity.generateCollisionShapes(recursive: true)
-            arView.installGestures([.rotation, .translation], for: modelEntity)
-            let anchorEntity = AnchorEntity(anchor: anchor)
-            anchorEntity.addChild(modelEntity)
-            self.arView.scene.addAnchor(anchorEntity)
+            parentEntity.addChild(modelEntity)
         }
+        arView.installGestures([.rotation, .translation], for: parentEntity)
+        let parentAnchor = AnchorEntity(anchor: anchor)
+        parentAnchor.addChild(parentEntity)
+        arView.scene.addAnchor(parentAnchor)
     }
     
     // MARK: - Touch Interaction
