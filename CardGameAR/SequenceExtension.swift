@@ -15,4 +15,43 @@ extension Sequence {
             try await operation(element)
         }
     }
+    
+    func mapAsync<T>(
+        _ transform: (Element) async throws -> T
+    ) async rethrows -> [T] {
+        var values = [T]()
+
+        for element in self {
+            try await values.append(transform(element))
+        }
+
+        return values
+    }
+    
+    func compactMapAsync<T>(
+        _ transform: (Element) async throws -> T?
+    ) async rethrows -> [T] {
+        var values = [T]()
+
+        for element in self {
+            guard let value = try await transform(element) else {
+                continue
+            }
+
+            values.append(value)
+        }
+
+        return values
+    }
+    
+    func reduceAsync<Result>(
+        _ initialResult: Result,
+        _ nextPartialResult: ((Result, Element) async throws -> Result)
+    ) async rethrows -> Result {
+        var result = initialResult
+        for element in self {
+            result = try await nextPartialResult(result, element)
+        }
+        return result
+    }
 }

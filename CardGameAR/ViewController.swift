@@ -13,11 +13,6 @@ import Combine
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
-    
-    // MARK: - Constants
-    
-    private let drawPile = "draw_pile"
-    private let modelScaleFactor: Float = 1
     private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
     
     // MARK: - Life Cycle
@@ -90,70 +85,22 @@ class ViewController: UIViewController {
     
     // MARK: - Object Placement
     
-    private func placeObject(named entityName: String, for anchor: ARAnchor, numberOfCardInPile: Int) async {
-        guard let modelEntity = try? await loadModelAsync(named: entityName)
-        else {
-            print("Couldn't load model for entity name \(entityName)")
-            return
-        }
-        let scaleFactor: Float = modelScaleFactor
-        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        modelEntity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: modelEntity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(modelEntity)
-        self.arView.scene.addAnchor(anchorEntity)
-    }
-    
-    private func placePreloadedModel(card: PlayingCards, for anchor: ARAnchor) async {
-        guard let entity = try? await playingCardModels[card]?.value
-        else {
-            print("Model is null or error")
-            return
-        }
-        let modelEntity = entity.clone(recursive: true)
-        let scaleFactor: Float = modelScaleFactor
-        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        modelEntity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: modelEntity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(modelEntity)
-        self.arView.scene.addAnchor(anchorEntity)
-    }
-    
     private func placeDrawPile(cards: [PlayingCards], for anchor: ARAnchor) async {
-        let parentEntity = ModelEntity()
-        parentEntity.name = drawPile
-        await cards.enumerated().forEachAsync { [playingCardModels] numberOfCardInPile, card in
-            guard let entity = try? await playingCardModels[card]?.value
-            else {
-                print("Model is null or error")
-                return
+        let loadedModels: [PlayingCards: ModelEntity]? = try? await cards
+            .reduceAsync([PlayingCards: ModelEntity]()) { [playingCardModels] partialResult, card in
+                var partialResult = partialResult
+                guard let modelEntity: ModelEntity = try? await playingCardModels[card]?.value else {
+                    print("Failed to load model for Card")
+                    throw CardGameError.failedToLoadModel
+                }
+                partialResult[card] = modelEntity
+                return partialResult
             }
-            let modelEntity = entity.clone(recursive: true)
-            modelEntity.name = card.assetName
-            let scaleFactor: Float = modelScaleFactor
-            modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-            
-            // move cards up with yOffset and move them slightly on x and z axis to appear a bit messy
-            let xAndzMovingRange: ClosedRange<Float> = 0...0.0001
-            let yOffset = Float(numberOfCardInPile) * (PlayingCards.thickness * 2)
-            modelEntity.moveObject(x: Float.random(in: xAndzMovingRange), y: yOffset, z: Float.random(in: xAndzMovingRange))
-            
-            // make cards appear a bit messy by rotating
-            let twoDegrees: Float = .pi / 90
-            let randomRotationAngle = Float.random(in: -twoDegrees...twoDegrees)
-            modelEntity.transform.rotation *= simd_quatf(angle: randomRotationAngle, axis: SIMD3<Float>(0, 1, 0))
-            
-            // rotate cards by 180° to show the back
-            modelEntity.transform.rotation *= simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1))
-            
-            modelEntity.generateCollisionShapes(recursive: true)
-            parentEntity.addChild(modelEntity)
-        }
-        arView.installGestures([.rotation, .translation], for: parentEntity)
+        guard let loadedModels else { return }
+        let drawPileModel = DrawPile(with: cards, from: loadedModels)
+        arView.installGestures([.rotation, .translation], for: drawPileModel.entity)
         let parentAnchor = AnchorEntity(anchor: anchor)
-        parentAnchor.addChild(parentEntity)
+        parentAnchor.addChild(drawPileModel.entity)
         arView.scene.addAnchor(parentAnchor)
     }
     
@@ -164,7 +111,7 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: drawPile, transform: firstResult.worldTransform)
+            let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
@@ -200,7 +147,8 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let anchorName = anchor.name, anchorName == drawPile {
+            // TODO: introduce some sort of game state to match the expected anchorName
+            if let anchorName = anchor.name, anchorName == DrawPile.identifier {
                 Task { await placeDrawPile(cards: PlayingCards.allBlueCards(), for: anchor) }
             }
         }
