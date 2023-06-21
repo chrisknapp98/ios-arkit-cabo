@@ -1,11 +1,11 @@
 //
-//  PlayingCards.swift
+//  PlayingCard.swift
 //  CardGameAR
 //
 //  Created by Christopher Knapp on 10.05.23.
 //
 
-enum PlayingCards: Hashable {
+enum PlayingCard: Hashable {
     case blue(type: CardType)
     case red(type: CardType)
     
@@ -65,28 +65,28 @@ enum PlayingCards: Hashable {
     }
 }
 
-extension PlayingCards {
-    static func randomBlueCard() -> PlayingCards {
-        guard let cardValue = PlayingCards.CardValue.allCases.randomElement()
-        else { return PlayingCards.red(type: .hearts(value: .king)) }
+extension PlayingCard {
+    static func randomBlueCard() -> PlayingCard {
+        guard let cardValue = PlayingCard.CardValue.allCases.randomElement()
+        else { return PlayingCard.red(type: .hearts(value: .king)) }
         let randomNumber = Int.random(in: 0...3)
         if randomNumber == 0 {
-            return PlayingCards.blue(type: .clubs(value: cardValue))
+            return PlayingCard.blue(type: .clubs(value: cardValue))
         } else if randomNumber == 1 {
-            return PlayingCards.blue(type: .diamonds(value: cardValue))
+            return PlayingCard.blue(type: .diamonds(value: cardValue))
         } else if randomNumber == 2 {
-            return PlayingCards.blue(type: .hearts(value: cardValue))
+            return PlayingCard.blue(type: .hearts(value: cardValue))
         } else {
-            return PlayingCards.blue(type: .spades(value: cardValue))
+            return PlayingCard.blue(type: .spades(value: cardValue))
         }
     }
     
-    static func allBlueCards() -> [PlayingCards] {
+    static func allBlueCards() -> [PlayingCard] {
         [
-            PlayingCards.CardValue.allCases.map { PlayingCards.blue(type: .clubs(value: $0)) },
-            PlayingCards.CardValue.allCases.map { PlayingCards.blue(type: .diamonds(value: $0)) },
-            PlayingCards.CardValue.allCases.map { PlayingCards.blue(type: .hearts(value: $0)) },
-            PlayingCards.CardValue.allCases.map { PlayingCards.blue(type: .spades(value: $0)) }
+            PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .clubs(value: $0)) },
+            PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .diamonds(value: $0)) },
+            PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .hearts(value: $0)) },
+            PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .spades(value: $0)) }
         ].flatMap { $0 }
     }
 }

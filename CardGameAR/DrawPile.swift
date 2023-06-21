@@ -21,13 +21,13 @@ struct DrawPile {
     
     // MARK: - Life Cycle
     
-    init(with cards: [PlayingCards], from playingCardModels: [PlayingCards: ModelEntity]) {
+    init(with cards: [PlayingCard], from playingCardModels: [PlayingCard: ModelEntity]) {
         entity = Self.createModelEntity(with: cards, from: playingCardModels)
     }
     
     private static func createModelEntity(
-        with cards: [PlayingCards],
-        from playingCardModels: [PlayingCards: ModelEntity]
+        with cards: [PlayingCard],
+        from playingCardModels: [PlayingCard: ModelEntity]
     ) -> ModelEntity {
         let parentEntity = ModelEntity()
         parentEntity.name = identifier
@@ -44,7 +44,7 @@ struct DrawPile {
             
             // move cards up with yOffset and move them slightly on x and z axis to appear a bit messy
             let xAndzMovingRange: ClosedRange<Float> = 0...0.0001
-            let yOffset = Float(numberOfCardInPile) * (PlayingCards.thickness * 2)
+            let yOffset = Float(numberOfCardInPile) * (PlayingCard.thickness * 2)
             modelEntity.moveObject(x: Float.random(in: xAndzMovingRange), y: yOffset, z: Float.random(in: xAndzMovingRange))
             
             // make cards appear a bit messy by rotating

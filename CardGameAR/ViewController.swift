@@ -13,7 +13,7 @@ import Combine
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
-    private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
+    private var playingCardModels: [PlayingCard: Task<ModelEntity, Error>] = [:]
     
     // MARK: - Life Cycle
     
@@ -49,7 +49,7 @@ class ViewController: UIViewController {
     }
     
     private func preloadAllModelEntities() {
-        PlayingCards.allBlueCards().forEach { card in
+        PlayingCard.allBlueCards().forEach { card in
             let task: Task<ModelEntity, Error> = Task {
                 try await loadModelAsync(named: card.assetName)
             }
@@ -85,9 +85,9 @@ class ViewController: UIViewController {
     
     // MARK: - Object Placement
     
-    private func placeDrawPile(cards: [PlayingCards], for anchor: ARAnchor) async {
-        let loadedModels: [PlayingCards: ModelEntity]? = try? await cards
-            .reduceAsync([PlayingCards: ModelEntity]()) { [playingCardModels] partialResult, card in
+    private func placeDrawPile(cards: [PlayingCard], for anchor: ARAnchor) async {
+        let loadedModels: [PlayingCard: ModelEntity]? = try? await cards
+            .reduceAsync([PlayingCard: ModelEntity]()) { [playingCardModels] partialResult, card in
                 var partialResult = partialResult
                 guard let modelEntity: ModelEntity = try? await playingCardModels[card]?.value else {
                     print("Failed to load model for Card")
@@ -149,7 +149,7 @@ extension ViewController: ARSessionDelegate {
         for anchor in anchors {
             // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
-                Task { await placeDrawPile(cards: PlayingCards.allBlueCards(), for: anchor) }
+                Task { await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor) }
             }
         }
     }
