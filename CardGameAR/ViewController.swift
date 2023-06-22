@@ -103,15 +103,32 @@ class ViewController: UIViewController {
         let location = recognizer.location(in: arView)
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
-        if let firstResult = results.first {
-            let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
-            arView.session.add(anchor: anchor)
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
+        let hits = arView.hitTest(location, query: .nearest, mask: .all)
+        if let drawPileEntity = hits.first?.entity {
+            let animationDefinition1 = FromToByAnimation(
+                to:
+                    Transform(
+                        rotation: drawPileEntity.transform.rotation * simd_quatf(angle: -.pi, axis: SIMD3<Float>(0, 0, 1)),
+                        translation: [0.1, 0, 0]
+                    ),
+                bindTarget: .transform
+            )
+//            let animationDefinition2 = FromToByAnimation(to: Transform(translation: [0, 0, -0.1]), bindTarget: .anchorEntity("anchor").entity("blueBox").transform)
+//            let animationGroupDefinition = AnimationGroup(group: [animationDefinition1, animationDefinition2])
+//            let animationResource = try! AnimationResource.generate(with: animationGroupDefinition)
+            let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+            drawPileEntity.playAnimation(animationResource, transitionDuration: 1, startsPaused: false)
         } else {
-            print("Object placement failed. Couldn't find a surface.")
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.error)
+            if let firstResult = results.first {
+                let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
+                arView.session.add(anchor: anchor)
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+            } else {
+                print("Object placement failed. Couldn't find a surface.")
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.error)
+            }
         }
     }
 }
