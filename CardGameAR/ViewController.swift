@@ -13,7 +13,7 @@ import Combine
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
-    private var playingCardModels: [PlayingCard: Task<ModelEntity, Error>] = [:]
+    private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     
     // MARK: - Life Cycle
     
@@ -31,8 +31,10 @@ class ViewController: UIViewController {
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
-        arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
-        preloadAllModelEntities()
+        Task {
+            await preloadAllModelEntities()
+            arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+        }
     }
     
     private func runOcclusionConfiguration() {
@@ -48,17 +50,19 @@ class ViewController: UIViewController {
         arView.session.run(configuration)
     }
     
-    private func preloadAllModelEntities() {
-        PlayingCard.allBlueCards().forEach { card in
-            let task: Task<ModelEntity, Error> = Task {
-                try await loadModelAsync(named: card.assetName)
+    private func preloadAllModelEntities() async {
+        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCards()
+            .reduceAsync([PlayingCard: ModelEntity]()) { partialResult, card in
+                var partialResult = partialResult
+                guard let modelEntity: ModelEntity = try? await loadModelAsync(named: card.assetName) else {
+                    print("Failed to load model for Card")
+                    throw CardGameError.failedToLoadModel
+                }
+                partialResult[card] = modelEntity
+                return partialResult
             }
-            playingCardModels[card] = task
-        }
-        
-//        playingCardModels.keys.forEach { card in
-//            Task { try await playingCardModels[card]?.value }
-//        }
+        guard let loadedModels else { return }
+        self.playingCardModels = loadedModels
     }
     
     private func loadModelAsync(named entityName: String) async throws -> ModelEntity {
@@ -86,18 +90,7 @@ class ViewController: UIViewController {
     // MARK: - Object Placement
     
     private func placeDrawPile(cards: [PlayingCard], for anchor: ARAnchor) async {
-        let loadedModels: [PlayingCard: ModelEntity]? = try? await cards
-            .reduceAsync([PlayingCard: ModelEntity]()) { [playingCardModels] partialResult, card in
-                var partialResult = partialResult
-                guard let modelEntity: ModelEntity = try? await playingCardModels[card]?.value else {
-                    print("Failed to load model for Card")
-                    throw CardGameError.failedToLoadModel
-                }
-                partialResult[card] = modelEntity
-                return partialResult
-            }
-        guard let loadedModels else { return }
-        let drawPileModel = DrawPile(with: cards, from: loadedModels)
+        let drawPileModel = DrawPile(with: cards, from: playingCardModels)
         arView.installGestures([.rotation, .translation], for: drawPileModel.entity)
         let parentAnchor = AnchorEntity(anchor: anchor)
         parentAnchor.addChild(drawPileModel.entity)
