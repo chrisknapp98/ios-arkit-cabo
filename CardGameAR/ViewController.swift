@@ -13,12 +13,7 @@ import Combine
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
-    
-    // MARK: - Constants
-    
-    private let drawPile = "draw_pile"
-    private let modelScaleFactor: Float = 1
-    private var playingCardModels: [PlayingCards: Task<ModelEntity, Error>] = [:]
+    private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     
     // MARK: - Life Cycle
     
@@ -36,8 +31,10 @@ class ViewController: UIViewController {
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
-        arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
-        preloadAllModelEntities()
+        Task {
+            await preloadAllModelEntities()
+            arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+        }
     }
     
     private func runOcclusionConfiguration() {
@@ -53,17 +50,19 @@ class ViewController: UIViewController {
         arView.session.run(configuration)
     }
     
-    private func preloadAllModelEntities() {
-        PlayingCards.allBlueCards().forEach { card in
-            let task: Task<ModelEntity, Error> = Task {
-                try await loadModelAsync(named: card.assetName)
+    private func preloadAllModelEntities() async {
+        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCards()
+            .reduceAsync([PlayingCard: ModelEntity]()) { partialResult, card in
+                var partialResult = partialResult
+                guard let modelEntity: ModelEntity = try? await loadModelAsync(named: card.assetName) else {
+                    print("Failed to load model for Card")
+                    throw CardGameError.failedToLoadModel
+                }
+                partialResult[card] = modelEntity
+                return partialResult
             }
-            playingCardModels[card] = task
-        }
-        
-//        playingCardModels.keys.forEach { card in
-//            Task { try await playingCardModels[card]?.value }
-//        }
+        guard let loadedModels else { return }
+        self.playingCardModels = loadedModels
     }
     
     private func loadModelAsync(named entityName: String) async throws -> ModelEntity {
@@ -90,35 +89,12 @@ class ViewController: UIViewController {
     
     // MARK: - Object Placement
     
-    private func placeObject(named entityName: String, for anchor: ARAnchor, numberOfCardInPile: Int) async {
-        guard let modelEntity = try? await loadModelAsync(named: entityName)
-        else {
-            print("Couldn't load model for entity name \(entityName)")
-            return
-        }
-        let scaleFactor: Float = modelScaleFactor
-        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        modelEntity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: modelEntity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(modelEntity)
-        self.arView.scene.addAnchor(anchorEntity)
-    }
-    
-    private func placePreloadedModel(card: PlayingCards, for anchor: ARAnchor) async {
-        guard let entity = try? await playingCardModels[card]?.value
-        else {
-            print("Model is null or error")
-            return
-        }
-        let modelEntity = entity.clone(recursive: true)
-        let scaleFactor: Float = modelScaleFactor
-        modelEntity.scale = SIMD3<Float>(scaleFactor, scaleFactor, scaleFactor)
-        modelEntity.generateCollisionShapes(recursive: true)
-        arView.installGestures([.rotation, .translation], for: modelEntity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(modelEntity)
-        self.arView.scene.addAnchor(anchorEntity)
+    private func placeDrawPile(cards: [PlayingCard], for anchor: ARAnchor) async {
+        let drawPileModel = DrawPile(with: cards, from: playingCardModels)
+        arView.installGestures([.rotation, .translation], for: drawPileModel.entity)
+        let parentAnchor = AnchorEntity(anchor: anchor)
+        parentAnchor.addChild(drawPileModel.entity)
+        arView.scene.addAnchor(parentAnchor)
     }
     
     // MARK: - Touch Interaction
@@ -128,7 +104,7 @@ class ViewController: UIViewController {
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: drawPile, transform: firstResult.worldTransform)
+            let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
             arView.session.add(anchor: anchor)
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
@@ -164,10 +140,23 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            if let anchorName = anchor.name, anchorName == drawPile {
-                let card = PlayingCards.randomBlueCard()
-                Task { await placePreloadedModel(card: card, for: anchor) }
+            // TODO: introduce some sort of game state to match the expected anchorName
+            if let anchorName = anchor.name, anchorName == DrawPile.identifier {
+                Task { await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor) }
             }
         }
+    }
+}
+
+// MARK: - ModelEntity Extension
+
+extension ModelEntity {
+    func moveObject(x: Float, y: Float, z: Float) {
+        let translation = SIMD3<Float>(x, y, z)
+        var matrix = matrix_identity_float4x4
+        matrix.columns.3.x = translation.x
+        matrix.columns.3.y = translation.y
+        matrix.columns.3.z = translation.z
+        transform.matrix = matrix
     }
 }
