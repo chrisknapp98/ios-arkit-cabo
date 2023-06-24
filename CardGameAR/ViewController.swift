@@ -9,11 +9,13 @@ import UIKit
 import ARKit
 import RealityKit
 import Combine
+import SwiftUI
 
 class ViewController: UIViewController {
     
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
+    private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
     
     // MARK: - Life Cycle
     
@@ -31,9 +33,11 @@ class ViewController: UIViewController {
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
+        addCallToActionView()
         Task {
             await preloadAllModelEntities()
             arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
+            updateGameState(.preGame(.placeDrawPile))
         }
     }
     
@@ -48,6 +52,24 @@ class ViewController: UIViewController {
         configuration.frameSemantics.insert(.personSegmentationWithDepth)
 //        }
         arView.session.run(configuration)
+    }
+    
+    private func addCallToActionView() {
+        let hostingController = UIHostingController(rootView: CallToActionView(gameState: currentGameState.eraseToAnyPublisher()))
+        hostingController.view.backgroundColor = .clear
+        arView.addSubview(hostingController.view)
+        hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: arView.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: arView.bottomAnchor)
+        ])
+    }
+    
+    @MainActor
+    private func updateGameState(_ gameState: GameState) {
+        currentGameState.send(gameState)
     }
     
     private func preloadAllModelEntities() async {
