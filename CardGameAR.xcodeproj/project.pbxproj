@@ -73,6 +73,8 @@
 		F37248932A1E34C000580BC6 /* Playing_Card_Blue_S_K.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37248862A1E34C000580BC6 /* Playing_Card_Blue_S_K.usdz */; };
 		F37248942A1E34C000580BC6 /* Playing_Card_Blue_S_A.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37248872A1E34C000580BC6 /* Playing_Card_Blue_S_A.usdz */; };
 		F37248952A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37248882A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz */; };
+		F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C52A4796FE009B6A77 /* GameState.swift */; };
+		F3D399C82A47971C009B6A77 /* CallToActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C72A47971C009B6A77 /* CallToActionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +147,8 @@
 		F37248862A1E34C000580BC6 /* Playing_Card_Blue_S_K.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_K.usdz; sourceTree = "<group>"; };
 		F37248872A1E34C000580BC6 /* Playing_Card_Blue_S_A.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_A.usdz; sourceTree = "<group>"; };
 		F37248882A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_6.usdz; sourceTree = "<group>"; };
+		F3D399C52A4796FE009B6A77 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		F3D399C72A47971C009B6A77 /* CallToActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallToActionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +211,8 @@
 				F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */,
 				F35040E72A431FD100117BF2 /* DrawPile.swift */,
 				F35040E92A43952600117BF2 /* CardGameError.swift */,
+				F3D399C52A4796FE009B6A77 /* GameState.swift */,
+				F3D399C72A47971C009B6A77 /* CallToActionView.swift */,
 			);
 			path = CardGameAR;
 			sourceTree = "<group>";
@@ -478,7 +484,9 @@
 				F3020EE029F5927F0011F0CB /* AppDelegate.swift in Sources */,
 				F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */,
 				F35A49832A0BCA8600635215 /* PlayingCard.swift in Sources */,
+				F3D399C82A47971C009B6A77 /* CallToActionView.swift in Sources */,
 				F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */,
+				F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */,
 				F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */,
 				F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */,
 			);
