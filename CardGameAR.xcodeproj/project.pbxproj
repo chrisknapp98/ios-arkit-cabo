@@ -76,6 +76,7 @@
 		F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C52A4796FE009B6A77 /* GameState.swift */; };
 		F3D399C82A47971C009B6A77 /* CallToActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C72A47971C009B6A77 /* CallToActionView.swift */; };
 		F3D399CA2A48D468009B6A77 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C92A48D468009B6A77 /* Player.swift */; };
+		F3D399CC2A48DDD1009B6A77 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3D399CB2A48DDD1009B6A77 /* Metal.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -151,6 +152,7 @@
 		F3D399C52A4796FE009B6A77 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		F3D399C72A47971C009B6A77 /* CallToActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallToActionView.swift; sourceTree = "<group>"; };
 		F3D399C92A48D468009B6A77 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		F3D399CB2A48DDD1009B6A77 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3D399CC2A48DDD1009B6A77 /* Metal.framework in Frameworks */,
 				BC646535CBE397E3554A50DA /* Pods_CardGameAR.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -168,6 +171,7 @@
 		38780F1C2FD3E770B176A416 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3D399CB2A48DDD1009B6A77 /* Metal.framework */,
 				62F434960BF18295101EE0A0 /* Pods_CardGameAR.framework */,
 			);
 			name = Frameworks;
