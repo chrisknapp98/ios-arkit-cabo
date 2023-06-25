@@ -59,6 +59,7 @@ class ViewController: UIViewController {
     private func addCallToActionView() {
         let hostingController = UIHostingController(rootView: CallToActionView(gameState: currentGameState.eraseToAnyPublisher()))
         hostingController.view.backgroundColor = .clear
+        hostingController.view.isUserInteractionEnabled = false
         arView.addSubview(hostingController.view)
         hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
