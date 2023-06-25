@@ -22,6 +22,7 @@ struct CallToActionView: View {
             Text(callToAction)
                 .font(.title3)
                 .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
                 .padding()
                 .onReceive(gameStatePublisher) { gameState in
                     handleGameStateChange(gameState)
@@ -49,6 +50,9 @@ struct CallToActionView: View {
             break
         case .placeDrawPile:
             callToAction = "Place Draw Pile"
+            break
+        case .setPlayerPositions:
+            callToAction = "Set Player Positions and tap on \ndraw pile to deal the cards"
             break
         }
     }

@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
+    private var players: [Player] = []
     
     // MARK: - Life Cycle
     
@@ -30,6 +31,7 @@ class ViewController: UIViewController {
             arView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
         arView.session.delegate = self
+//        arView.debugOptions = [.showAnchorOrigins, .showPhysics]
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
@@ -123,11 +125,29 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: arView)
+        // TODO: switch case
+        if case let .preGame(state) = currentGameState.value {
+            if state == .setPlayerPositions {
+                let hits = arView.hitTest(location, query: .nearest, mask: .all)
+                if let playerEntity = hits.first?.entity as? Player {
+                    playerEntity.removeFromParent()
+                    players.remove(at: playerEntity.identity)
+                    return
+                }
+            }
+        }
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
-            arView.session.add(anchor: anchor)
+            if case let .preGame(state) = currentGameState.value {
+                if state == .placeDrawPile {
+                    let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
+                    arView.session.add(anchor: anchor)
+                } else if state == .setPlayerPositions {
+                    let anchor = ARAnchor(name: "player_positions", transform: firstResult.worldTransform)
+                    arView.session.add(anchor: anchor)
+                }
+            }
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
         } else {
@@ -164,9 +184,45 @@ extension ViewController: ARSessionDelegate {
         for anchor in anchors {
             // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
-                Task { await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor) }
+                Task {
+                    await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
+                    updateGameState(.preGame(.setPlayerPositions))
+                }
+            } else if let anchorName = anchor.name, anchorName == "player_positions" {
+                setPlayerPosition(for: anchor)
             }
         }
+    }
+    
+    private func setPlayerPosition(for anchor: ARAnchor) {
+//        let modelEntity = personImageModelEntity(for: anchor)
+        let entity = Player(identity: players.count)
+        arView.installGestures([.translation], for: entity)
+        let anchorEntity = AnchorEntity(anchor: anchor)
+        anchorEntity.addChild(entity)
+        arView.scene.addAnchor(anchorEntity)
+        players.append(entity)
+    }
+    // TODO: remove?
+    private func personImageModelEntity(for anchor: ARAnchor) -> ModelEntity {
+        let mesh: MeshResource = .generatePlane(width: 0.05, depth: 0.05, cornerRadius: 8)
+        
+        var material = SimpleMaterial()
+        if let image = UIImage(systemName: "person.circle.fill"),
+           let cgImage = image.cgImage,
+           let baseResource = try? TextureResource.generate(
+            from: cgImage,
+            options: TextureResource.CreateOptions(semantic: .color, mipmapsMode: .allocateAndGenerateAll)
+           ) {
+            material.color = SimpleMaterial.BaseColor(
+                tint: .white.withAlphaComponent(0.999),
+                texture: .init(baseResource)
+            )
+        }
+        material.metallic = .float(1.0)
+        material.roughness = .float(0.0)
+        
+        return ModelEntity(mesh: mesh, materials: [material])
     }
 }
 
