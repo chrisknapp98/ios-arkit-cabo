@@ -36,7 +36,8 @@ struct CallToActionView: View {
         case .preGame(let state):
             handlePreGameStateChange(state)
             break
-        case .inGame:
+        case .inGame(let state):
+            handleInGameStateChange(state)
             break
         case .postGame:
             break
@@ -53,6 +54,14 @@ struct CallToActionView: View {
             break
         case .setPlayerPositions:
             callToAction = "Set Player Positions and tap on \ndraw pile to deal the cards"
+            break
+        }
+    }
+    
+    private func handleInGameStateChange(_ inGameState: GameState.InGameState) {
+        switch inGameState {
+        case .dealingCards:
+            callToAction = "Dealing Cards..."
             break
         }
     }

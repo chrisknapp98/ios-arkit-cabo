@@ -16,7 +16,9 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
+    private var drawPile: DrawPile?
     private var players: [Player] = []
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Life Cycle
     
@@ -120,6 +122,7 @@ class ViewController: UIViewController {
         let parentAnchor = AnchorEntity(anchor: anchor)
         parentAnchor.addChild(drawPileModel.entity)
         arView.scene.addAnchor(parentAnchor)
+        self.drawPile = drawPileModel
     }
     
     // MARK: - Touch Interaction
@@ -133,6 +136,10 @@ class ViewController: UIViewController {
                 if let playerEntity = hits.first?.entity as? Player {
                     playerEntity.removeFromParent()
                     players.remove(at: playerEntity.identity)
+                    return
+                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
+//                    updateGameState(.inGame(.dealingCards))
+                    dealCards()
                     return
                 }
             }
@@ -156,6 +163,45 @@ class ViewController: UIViewController {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
         }
+    }
+    
+    private func dealCards() {
+        guard let drawPile = drawPile?.entity,
+              let playingCard = drawPile.children.first,
+              let player = players.first
+        else {
+            print("No players registered")
+            return
+        }
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: player.transform.rotation * simd_quatf(ix: 1, iy: 0, iz: 0, r: 0), // not happy with this
+                translation: player.position(relativeTo: drawPile)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        playAnimation(entity: playingCard, animationResource, transitionDuration: 1, startsPaused: false) {
+            drawPile.removeChild(playingCard, preservingWorldTransform: true)
+            player.addChild(playingCard, preservingWorldTransform: true)
+        }
+    }
+    
+    private func playAnimation(entity: Entity, _ animationResource: AnimationResource, transitionDuration: TimeInterval, startsPaused: Bool, completion: @escaping () -> Void) {
+        var cancellable: AnyCancellable?
+        cancellable = arView.scene.publisher(for: AnimationEvents.PlaybackCompleted.self)
+            .sink { event in
+                print("AR method - reveceiving event for entity \(String(describing: event.playbackController.entity?.name))")
+                if event.playbackController.entity == entity {
+                    print("AR method - running completion")
+                    completion()
+                    cancellable?.cancel()
+                }
+            }
+        if let cancellable { cancellables.insert(cancellable) }
+        entity.playAnimation(animationResource, transitionDuration: transitionDuration, startsPaused: startsPaused)
+        
     }
 }
 

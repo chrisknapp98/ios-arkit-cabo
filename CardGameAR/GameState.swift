@@ -15,7 +15,11 @@ enum GameState: Equatable {
         case setPlayerPositions
     }
     
+    enum InGameState {
+        case dealingCards
+    }
+    
     case preGame(_ state: PreGameState)
-    case inGame
+    case inGame(_ state: InGameState)
     case postGame
 }
