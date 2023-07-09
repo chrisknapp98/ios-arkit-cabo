@@ -173,9 +173,11 @@ class ViewController: UIViewController {
             print("No players registered")
             return
         }
+        let directionToDrawPile = normalize(drawPile.position - playingCard.position)
+        let targetRotation = simd_quatf(from: directionToDrawPile, to: SIMD3<Float>(0, 1, 0))
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
-                rotation: player.transform.rotation * simd_quatf(ix: 1, iy: 0, iz: 0, r: 0), // not happy with this
+                rotation: targetRotation,
                 translation: player.position(relativeTo: drawPile)
             ),
             bindTarget: .transform
