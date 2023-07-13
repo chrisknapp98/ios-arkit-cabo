@@ -8,6 +8,7 @@
 import Foundation
 import RealityKit
 
+// TODO: consider making this a subclass from `Entity` implementing `HasModel` and `HasCollision`
 struct DrawPile {
     
     // MARK: - Constants
@@ -23,6 +24,36 @@ struct DrawPile {
     
     init(with cards: [PlayingCard], from playingCardModels: [PlayingCard: ModelEntity]) {
         entity = Self.createModelEntity(with: cards, from: playingCardModels)
+    }
+    
+    @MainActor
+    func dealCards(cardsPerPlayer: Int, players: [Player]) async {
+        for _ in 0..<cardsPerPlayer {
+            for player in players {
+                guard let playingCard = entity.children.reversed().first else { return }
+                await moveCardToPlayer(playingCard: playingCard, player: player)
+            }
+        }
+    }
+    
+    @MainActor
+    private func moveCardToPlayer(playingCard: Entity, player: Player) async {
+        // TODO: maybe lift the card slightly from the ground depending on the number of children
+        let messyConcealedCardRotation = (player.transform.rotation
+                                          * simd_quatf(ix: 1, iy: 0, iz: 0, r: 0) // card front facing to the plane
+                                          * simd_quatf(angle: .random(in: -.pi...(.pi)), axis: SIMD3<Float>(0, 1, 0))) // messy appearance
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: messyConcealedCardRotation,
+                translation: player.position(relativeTo: self.entity)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+        entity.removeChild(playingCard, preservingWorldTransform: true)
+        player.addChild(playingCard, preservingWorldTransform: true)
     }
     
     private static func createModelEntity(

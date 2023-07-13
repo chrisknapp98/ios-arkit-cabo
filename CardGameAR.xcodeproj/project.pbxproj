@@ -13,6 +13,7 @@
 		F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = F3020EE329F5927F0011F0CB /* Experience.rcproject */; };
 		F3020EE929F592800011F0CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3020EE829F592800011F0CB /* Assets.xcassets */; };
 		F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */; };
+		F32686E22A604528008760B0 /* EntityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E12A604528008760B0 /* EntityExtension.swift */; };
 		F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */; };
 		F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E72A431FD100117BF2 /* DrawPile.swift */; };
 		F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E92A43952600117BF2 /* CardGameError.swift */; };
@@ -75,6 +76,8 @@
 		F37248952A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F37248882A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz */; };
 		F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C52A4796FE009B6A77 /* GameState.swift */; };
 		F3D399C82A47971C009B6A77 /* CallToActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C72A47971C009B6A77 /* CallToActionView.swift */; };
+		F3D399CA2A48D468009B6A77 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D399C92A48D468009B6A77 /* Player.swift */; };
+		F3D399CC2A48DDD1009B6A77 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3D399CB2A48DDD1009B6A77 /* Metal.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -87,6 +90,7 @@
 		F3020EE329F5927F0011F0CB /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
 		F3020EE829F592800011F0CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3020EEB29F592800011F0CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F32686E12A604528008760B0 /* EntityExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityExtension.swift; sourceTree = "<group>"; };
 		F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		F35040E72A431FD100117BF2 /* DrawPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawPile.swift; sourceTree = "<group>"; };
 		F35040E92A43952600117BF2 /* CardGameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGameError.swift; sourceTree = "<group>"; };
@@ -149,6 +153,8 @@
 		F37248882A1E34C000580BC6 /* Playing_Card_Blue_S_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Playing_Card_Blue_S_6.usdz; sourceTree = "<group>"; };
 		F3D399C52A4796FE009B6A77 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		F3D399C72A47971C009B6A77 /* CallToActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallToActionView.swift; sourceTree = "<group>"; };
+		F3D399C92A48D468009B6A77 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		F3D399CB2A48DDD1009B6A77 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +162,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3D399CC2A48DDD1009B6A77 /* Metal.framework in Frameworks */,
 				BC646535CBE397E3554A50DA /* Pods_CardGameAR.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -166,6 +173,7 @@
 		38780F1C2FD3E770B176A416 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3D399CB2A48DDD1009B6A77 /* Metal.framework */,
 				62F434960BF18295101EE0A0 /* Pods_CardGameAR.framework */,
 			);
 			name = Frameworks;
@@ -207,9 +215,11 @@
 				F3020EE329F5927F0011F0CB /* Experience.rcproject */,
 				F3020EE829F592800011F0CB /* Assets.xcassets */,
 				F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */,
+				F3D399C92A48D468009B6A77 /* Player.swift */,
 				F35A49822A0BCA8600635215 /* PlayingCard.swift */,
 				F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */,
 				F35040E72A431FD100117BF2 /* DrawPile.swift */,
+				F32686E12A604528008760B0 /* EntityExtension.swift */,
 				F35040E92A43952600117BF2 /* CardGameError.swift */,
 				F3D399C52A4796FE009B6A77 /* GameState.swift */,
 				F3D399C72A47971C009B6A77 /* CallToActionView.swift */,
@@ -488,6 +498,8 @@
 				F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */,
 				F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */,
 				F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */,
+				F32686E22A604528008760B0 /* EntityExtension.swift in Sources */,
+				F3D399CA2A48D468009B6A77 /* Player.swift in Sources */,
 				F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

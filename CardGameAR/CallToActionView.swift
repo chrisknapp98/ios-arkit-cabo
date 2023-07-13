@@ -22,6 +22,7 @@ struct CallToActionView: View {
             Text(callToAction)
                 .font(.title3)
                 .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
                 .padding()
                 .onReceive(gameStatePublisher) { gameState in
                     handleGameStateChange(gameState)
@@ -35,7 +36,8 @@ struct CallToActionView: View {
         case .preGame(let state):
             handlePreGameStateChange(state)
             break
-        case .inGame:
+        case .inGame(let state):
+            handleInGameStateChange(state)
             break
         case .postGame:
             break
@@ -49,6 +51,17 @@ struct CallToActionView: View {
             break
         case .placeDrawPile:
             callToAction = "Place Draw Pile"
+            break
+        case .setPlayerPositions:
+            callToAction = "Set Player Positions and tap on \ndraw pile to deal the cards"
+            break
+        }
+    }
+    
+    private func handleInGameStateChange(_ inGameState: GameState.InGameState) {
+        switch inGameState {
+        case .dealingCards:
+            callToAction = "Dealing Cards..."
             break
         }
     }

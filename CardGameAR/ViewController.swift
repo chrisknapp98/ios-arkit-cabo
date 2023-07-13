@@ -16,6 +16,11 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
+    private var drawPile: DrawPile?
+    private var players: [Player] = []
+    private var cancellables = Set<AnyCancellable>()
+    
+    private let cardsPerPlayer: Int = 4
     
     // MARK: - Life Cycle
     
@@ -30,6 +35,7 @@ class ViewController: UIViewController {
             arView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
         arView.session.delegate = self
+//        arView.debugOptions = [.showAnchorOrigins, .showPhysics]
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
@@ -57,6 +63,7 @@ class ViewController: UIViewController {
     private func addCallToActionView() {
         let hostingController = UIHostingController(rootView: CallToActionView(gameState: currentGameState.eraseToAnyPublisher()))
         hostingController.view.backgroundColor = .clear
+        hostingController.view.isUserInteractionEnabled = false
         arView.addSubview(hostingController.view)
         hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -117,17 +124,42 @@ class ViewController: UIViewController {
         let parentAnchor = AnchorEntity(anchor: anchor)
         parentAnchor.addChild(drawPileModel.entity)
         arView.scene.addAnchor(parentAnchor)
+        self.drawPile = drawPileModel
     }
     
     // MARK: - Touch Interaction
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: arView)
+        // TODO: switch case
+        if case let .preGame(state) = currentGameState.value {
+            if state == .setPlayerPositions {
+                let hits = arView.hitTest(location, query: .nearest, mask: .all)
+                if let playerEntity = hits.first?.entity as? Player {
+                    playerEntity.removeFromParent()
+                    players.remove(at: playerEntity.identity)
+                    return
+                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
+                    Task {
+                        updateGameState(.inGame(.dealingCards))
+                        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+                    }
+                    return
+                }
+            }
+        }
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
         if let firstResult = results.first {
-            let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
-            arView.session.add(anchor: anchor)
+            if case let .preGame(state) = currentGameState.value {
+                if state == .placeDrawPile {
+                    let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
+                    arView.session.add(anchor: anchor)
+                } else if state == .setPlayerPositions {
+                    let anchor = ARAnchor(name: "player_positions", transform: firstResult.worldTransform)
+                    arView.session.add(anchor: anchor)
+                }
+            }
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
         } else {
@@ -136,6 +168,7 @@ class ViewController: UIViewController {
             generator.notificationOccurred(.error)
         }
     }
+    
 }
 
 // MARK: - ARView Coaching Overlay
@@ -164,21 +197,22 @@ extension ViewController: ARSessionDelegate {
         for anchor in anchors {
             // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
-                Task { await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor) }
+                Task {
+                    await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
+                    updateGameState(.preGame(.setPlayerPositions))
+                }
+            } else if let anchorName = anchor.name, anchorName == "player_positions" {
+                setPlayerPosition(for: anchor)
             }
         }
     }
-}
-
-// MARK: - ModelEntity Extension
-
-extension ModelEntity {
-    func moveObject(x: Float, y: Float, z: Float) {
-        let translation = SIMD3<Float>(x, y, z)
-        var matrix = matrix_identity_float4x4
-        matrix.columns.3.x = translation.x
-        matrix.columns.3.y = translation.y
-        matrix.columns.3.z = translation.z
-        transform.matrix = matrix
+    
+    private func setPlayerPosition(for anchor: ARAnchor) {
+        let entity = Player(identity: players.count)
+        arView.installGestures([.translation], for: entity)
+        let anchorEntity = AnchorEntity(anchor: anchor)
+        anchorEntity.addChild(entity)
+        arView.scene.addAnchor(anchorEntity)
+        players.append(entity)
     }
 }

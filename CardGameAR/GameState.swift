@@ -7,14 +7,19 @@
 
 import Foundation
 
-enum GameState {
+enum GameState: Equatable {
     
-    enum PreGameState {
+    enum PreGameState: Equatable {
         case loadingAssets
         case placeDrawPile
+        case setPlayerPositions
+    }
+    
+    enum InGameState {
+        case dealingCards
     }
     
     case preGame(_ state: PreGameState)
-    case inGame
+    case inGame(_ state: InGameState)
     case postGame
 }
