@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
     
+    private let cardsPerPlayer: Int = 4
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -138,8 +140,10 @@ class ViewController: UIViewController {
                     players.remove(at: playerEntity.identity)
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
-//                    updateGameState(.inGame(.dealingCards))
-                    dealCards()
+                    Task {
+                        updateGameState(.inGame(.dealingCards))
+                        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+                    }
                     return
                 }
             }
@@ -165,44 +169,6 @@ class ViewController: UIViewController {
         }
     }
     
-    private func dealCards() {
-        guard let drawPile = drawPile?.entity,
-              let playingCard = drawPile.children.first,
-              let player = players.first
-        else {
-            print("No players registered")
-            return
-        }
-        let animationDefinition1 = FromToByAnimation(
-            to: Transform(
-                rotation: player.transform.rotation * simd_quatf(ix: 1, iy: 0, iz: 0, r: 0), // not happy with this
-                translation: player.position(relativeTo: drawPile)
-            ),
-            bindTarget: .transform
-        )
-        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
-        
-        playAnimation(entity: playingCard, animationResource, transitionDuration: 1, startsPaused: false) {
-            drawPile.removeChild(playingCard, preservingWorldTransform: true)
-            player.addChild(playingCard, preservingWorldTransform: true)
-        }
-    }
-    
-    private func playAnimation(entity: Entity, _ animationResource: AnimationResource, transitionDuration: TimeInterval, startsPaused: Bool, completion: @escaping () -> Void) {
-        var cancellable: AnyCancellable?
-        cancellable = arView.scene.publisher(for: AnimationEvents.PlaybackCompleted.self)
-            .sink { event in
-                print("AR method - reveceiving event for entity \(String(describing: event.playbackController.entity?.name))")
-                if event.playbackController.entity == entity {
-                    print("AR method - running completion")
-                    completion()
-                    cancellable?.cancel()
-                }
-            }
-        if let cancellable { cancellables.insert(cancellable) }
-        entity.playAnimation(animationResource, transitionDuration: transitionDuration, startsPaused: startsPaused)
-        
-    }
 }
 
 // MARK: - ARView Coaching Overlay
@@ -242,46 +208,11 @@ extension ViewController: ARSessionDelegate {
     }
     
     private func setPlayerPosition(for anchor: ARAnchor) {
-//        let modelEntity = personImageModelEntity(for: anchor)
         let entity = Player(identity: players.count)
         arView.installGestures([.translation], for: entity)
         let anchorEntity = AnchorEntity(anchor: anchor)
         anchorEntity.addChild(entity)
         arView.scene.addAnchor(anchorEntity)
         players.append(entity)
-    }
-    // TODO: remove?
-    private func personImageModelEntity(for anchor: ARAnchor) -> ModelEntity {
-        let mesh: MeshResource = .generatePlane(width: 0.05, depth: 0.05, cornerRadius: 8)
-        
-        var material = SimpleMaterial()
-        if let image = UIImage(systemName: "person.circle.fill"),
-           let cgImage = image.cgImage,
-           let baseResource = try? TextureResource.generate(
-            from: cgImage,
-            options: TextureResource.CreateOptions(semantic: .color, mipmapsMode: .allocateAndGenerateAll)
-           ) {
-            material.color = SimpleMaterial.BaseColor(
-                tint: .white.withAlphaComponent(0.999),
-                texture: .init(baseResource)
-            )
-        }
-        material.metallic = .float(1.0)
-        material.roughness = .float(0.0)
-        
-        return ModelEntity(mesh: mesh, materials: [material])
-    }
-}
-
-// MARK: - ModelEntity Extension
-
-extension ModelEntity {
-    func moveObject(x: Float, y: Float, z: Float) {
-        let translation = SIMD3<Float>(x, y, z)
-        var matrix = matrix_identity_float4x4
-        matrix.columns.3.x = translation.x
-        matrix.columns.3.y = translation.y
-        matrix.columns.3.z = translation.z
-        transform.matrix = matrix
     }
 }
