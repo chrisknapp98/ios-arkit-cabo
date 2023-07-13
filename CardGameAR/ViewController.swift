@@ -119,12 +119,19 @@ class ViewController: UIViewController {
     // MARK: - Object Placement
     
     private func placeDrawPile(cards: [PlayingCard], for anchor: ARAnchor) async {
-        let drawPileModel = DrawPile(with: cards, from: playingCardModels)
-        arView.installGestures([.rotation, .translation], for: drawPileModel.entity)
+        let drawPile = DrawPile(with: cards, from: playingCardModels)
+        arView.installGestures([.rotation, .translation], for: drawPile.entity)
         let parentAnchor = AnchorEntity(anchor: anchor)
-        parentAnchor.addChild(drawPileModel.entity)
+        parentAnchor.addChild(drawPile.entity)
         arView.scene.addAnchor(parentAnchor)
-        self.drawPile = drawPileModel
+        self.drawPile = drawPile
+        placeDiscardPile()
+    }
+    
+    private func placeDiscardPile() {
+        guard let discardPile = drawPile?.discardPile, let anchor = discardPile.entity.anchor else { return }
+        arView.installGestures([.rotation, .translation], for: discardPile.entity)
+        arView.scene.addAnchor(anchor)
     }
     
     // MARK: - Touch Interaction
@@ -141,8 +148,9 @@ class ViewController: UIViewController {
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
-                        updateGameState(.inGame(.dealingCards))
+//                        updateGameState(.inGame(.dealingCards)) // TODO: temporarily disabled to try this more than once
                         await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+                        await drawPile?.moveLastCardToDiscardPile()
                     }
                     return
                 }
