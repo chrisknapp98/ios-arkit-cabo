@@ -116,6 +116,7 @@ struct DrawPile {
 
 struct DiscardPile {
     
+    static let identifier = "discard_pile"
     let entity: ModelEntity
     
     // params playingCard and modelForCard only for seeing something - didn't work yet though

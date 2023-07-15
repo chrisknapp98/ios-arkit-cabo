@@ -37,6 +37,7 @@ class ViewController: UIViewController {
         ])
         arView.session.delegate = self
 //        arView.debugOptions = [.showAnchorOrigins, .showPhysics]
+//        arView.debugOptions = [.showPhysics]
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
@@ -126,29 +127,25 @@ class ViewController: UIViewController {
         parentAnchor.addChild(drawPile.entity)
         arView.scene.addAnchor(parentAnchor)
         self.drawPile = drawPile
-        placeDiscardPile()
     }
-    // TODO: this is temporarily
-    private func placeDiscardPile() {
-        guard let drawPile = drawPile?.entity else { return }
+    
+    private func placeDiscardPile(for anchor: ARAnchor) {
+        // TODO: temporarily
         let parentEntity = ModelEntity()
         parentEntity.generateCollisionShapes(recursive: true)
-        
-        let drawPileTransform = drawPile.transformMatrix(relativeTo: nil)
-        let drawPileWorldPosition = SIMD3<Float>(drawPileTransform.columns.3.x,
-                                                 drawPileTransform.columns.3.y,
-                                                 drawPileTransform.columns.3.z)
-        var discardPilePosition = drawPileWorldPosition
-        discardPilePosition.x += 0.1
-        parentEntity.setPosition(discardPilePosition, relativeTo: nil)
-        
-        let discardPileAnchor = ARAnchor(transform: parentEntity.transformMatrix(relativeTo: nil))
-        let parentAnchor = AnchorEntity(anchor: discardPileAnchor)
+        let parentAnchor = AnchorEntity(anchor: anchor)
         parentAnchor.addChild(parentEntity)
         
-        self.discardPile = parentEntity
         arView.installGestures([.rotation, .translation], for: parentEntity)
         arView.scene.addAnchor(parentAnchor)
+        self.discardPile = parentEntity
+    }
+    
+    private func transformForDiscardPile(drawPileTransform: simd_float4x4) -> simd_float4x4 {
+        var drawPileTransform = drawPileTransform
+        // maybe choose x or/and z axis based on device orientation whatsoever
+        drawPileTransform.columns.3.x += 0.1
+        return drawPileTransform
     }
     
     // MARK: - Touch Interaction
@@ -180,8 +177,13 @@ class ViewController: UIViewController {
         if let firstResult = results.first {
             if case let .preGame(state) = currentGameState.value {
                 if state == .placeDrawPile {
-                    let anchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
-                    arView.session.add(anchor: anchor)
+                    let drawPileAnchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
+                    arView.session.add(anchor: drawPileAnchor)
+                    let discardPileAnchor = ARAnchor(
+                        name: DiscardPile.identifier,
+                        transform: transformForDiscardPile(drawPileTransform: firstResult.worldTransform)
+                    )
+                    arView.session.add(anchor: discardPileAnchor)
                 } else if state == .setPlayerPositions {
                     let anchor = ARAnchor(name: "player_positions", transform: firstResult.worldTransform)
                     arView.session.add(anchor: anchor)
@@ -196,11 +198,12 @@ class ViewController: UIViewController {
         }
     }
     // TODO: this is temporarily
+    
     private func moveCardToDiscardPile() async {
         guard let drawPile, let discardPile else { return }
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
-                rotation: discardPile.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                rotation: discardPile.transform.rotation,
                 translation: discardPile.position(relativeTo: drawPile.entity)
             ),
             bindTarget: .transform
@@ -246,6 +249,8 @@ extension ViewController: ARSessionDelegate {
                     await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
                     updateGameState(.preGame(.setPlayerPositions))
                 }
+            } else if let anchorName = anchor.name, anchorName == DiscardPile.identifier {
+                placeDiscardPile(for: anchor)
             } else if let anchorName = anchor.name, anchorName == "player_positions" {
                 setPlayerPosition(for: anchor)
             }
