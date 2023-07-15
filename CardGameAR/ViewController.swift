@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
     private var drawPile: DrawPile?
-    private var discardPile: ModelEntity?
+    private var discardPile: DiscardPile?
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
     
@@ -130,15 +130,13 @@ class ViewController: UIViewController {
     }
     
     private func placeDiscardPile(for anchor: ARAnchor) {
-        // TODO: temporarily
-        let parentEntity = ModelEntity()
-        parentEntity.generateCollisionShapes(recursive: true)
-        let parentAnchor = AnchorEntity(anchor: anchor)
-        parentAnchor.addChild(parentEntity)
-        
-        arView.installGestures([.rotation, .translation], for: parentEntity)
-        arView.scene.addAnchor(parentAnchor)
-        self.discardPile = parentEntity
+        let discardPile = DiscardPile()
+        discardPile.entity.generateCollisionShapes(recursive: true)
+        let discardPileAnchor = AnchorEntity(anchor: anchor)
+        discardPileAnchor.addChild(discardPile.entity)
+        arView.installGestures([.rotation, .translation], for: discardPile.entity)
+        arView.scene.addAnchor(discardPileAnchor)
+        self.discardPile = discardPile
     }
     
     private func transformForDiscardPile(drawPileTransform: simd_float4x4) -> simd_float4x4 {
@@ -162,11 +160,11 @@ class ViewController: UIViewController {
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
-//                        updateGameState(.inGame(.dealingCards)) // TODO: temporarily disabled to try this more than once
+                        updateGameState(.inGame(.dealingCards))
                         await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
-//                        await drawPile?.moveLastCardToDiscardPile()
-                        // TODO: this is temporarily
-                        await moveCardToDiscardPile()
+                        if let discardPile {
+                            await drawPile?.moveLastCardToDiscardPile(discardPile)
+                        }
                     }
                     return
                 }
@@ -196,25 +194,6 @@ class ViewController: UIViewController {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
         }
-    }
-    // TODO: this is temporarily
-    
-    private func moveCardToDiscardPile() async {
-        guard let drawPile, let discardPile else { return }
-        let animationDefinition1 = FromToByAnimation(
-            to: Transform(
-                rotation: discardPile.transform.rotation,
-                translation: discardPile.position(relativeTo: drawPile.entity)
-            ),
-            bindTarget: .transform
-        )
-        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
-        
-        guard let playingCard = drawPile.entity.children.reversed().first else { return }
-        
-        await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
-        drawPile.entity.removeChild(playingCard, preservingWorldTransform: true)
-        discardPile.addChild(playingCard, preservingWorldTransform: true)
     }
     
 }

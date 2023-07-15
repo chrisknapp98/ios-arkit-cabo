@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import ARKit
 import RealityKit
 
 // TODO: consider making this a subclass from `Entity` implementing `HasModel` and `HasCollision`
@@ -20,31 +19,32 @@ struct DrawPile {
     // MARK: - Properties
     
     let entity: ModelEntity
-    let discardPile: DiscardPile
     
     // MARK: - Life Cycle
     
     init(with cards: [PlayingCard], from playingCardModels: [PlayingCard: ModelEntity]) {
         entity = Self.createModelEntity(with: cards, from: playingCardModels)
-        discardPile = DiscardPile(drawPile: entity, playingCard: cards[0], modelForCard: playingCardModels[cards[0]])
     }
     
     @MainActor
-    func moveLastCardToDiscardPile() async {
-        let animationDefinition1 = FromToByAnimation(
-            to: Transform(
-                rotation: discardPile.entity.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
-                translation: discardPile.entity.position(relativeTo: entity)
-            ),
-            bindTarget: .transform
+    func moveLastCardToDiscardPile(_ discardPile: DiscardPile) async {
+        let transform = Transform(
+            rotation: discardPile.entity.transform.rotation,
+            translation: discardPile.entity.position(relativeTo: entity)
         )
+        await moveLastCardToEntity(discardPile.entity, transform: transform)
+    }
+    
+    @MainActor
+    private func moveLastCardToEntity(_ targetEntity: Entity, transform: Transform) async {
+        let animationDefinition1 = FromToByAnimation(to: transform, bindTarget: .transform)
         let animationResource = try! AnimationResource.generate(with: animationDefinition1)
         
         guard let playingCard = entity.children.reversed().first else { return }
         
         await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
         entity.removeChild(playingCard, preservingWorldTransform: true)
-        discardPile.setFirstCard(playingCard)
+        targetEntity.addChild(playingCard, preservingWorldTransform: true)
     }
     
     @MainActor
@@ -112,43 +112,4 @@ struct DrawPile {
         }
         return parentEntity
     }
-}
-
-struct DiscardPile {
-    
-    static let identifier = "discard_pile"
-    let entity: ModelEntity
-    
-    // params playingCard and modelForCard only for seeing something - didn't work yet though
-    init(drawPile: Entity, playingCard: PlayingCard, modelForCard: Entity?) {
-        let parentEntity = ModelEntity()
-        parentEntity.generateCollisionShapes(recursive: true)
-        // Get the transform of the draw pile's anchor
-        guard let drawPileTransform = drawPile.anchor?.transform else {
-            entity = parentEntity
-            return
-        }
-        
-        var discardPileTransformMatrix = drawPileTransform.matrix
-        discardPileTransformMatrix.columns.3.x += 0.1
-        
-        let discardPileAnchor = ARAnchor(transform: discardPileTransformMatrix)
-        let parentAnchor = AnchorEntity(anchor: discardPileAnchor)
-        parentAnchor.addChild(parentEntity)
-        self.entity = parentEntity
-        
-        
-        // add any card to see something - not visible
-        let modelEntity = entity.clone(recursive: true)
-        modelEntity.name = playingCard.assetName
-        modelEntity.generateCollisionShapes(recursive: true)
-        parentEntity.addChild(modelEntity)
-        
-    }
-    
-    @MainActor
-    func setFirstCard(_ card: Entity) {
-        entity.addChild(card, preservingWorldTransform: true)
-    }
-    
 }
