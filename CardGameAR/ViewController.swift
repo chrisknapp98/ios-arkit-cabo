@@ -160,11 +160,7 @@ class ViewController: UIViewController {
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
-                        updateGameState(.inGame(.dealingCards))
-                        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
-                        if let discardPile {
-                            await drawPile?.moveLastCardToDiscardPile(discardPile)
-                        }
+                        await dealCards()
                     }
                     return
                 }
@@ -193,6 +189,36 @@ class ViewController: UIViewController {
             print("Object placement failed. Couldn't find a surface.")
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
+        }
+    }
+    
+    private func dealCards() async {
+        updateGameState(.inGame(.dealingCards))
+        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+        if let discardPile {
+            await drawPile?.moveLastCardToDiscardPile(discardPile)
+        }
+        for player in players {
+            await rotatePlayerFacingTowardsDrawPile(player)
+            await player.distributeCardsEvenly()
+        }
+    }
+    
+    private func rotatePlayerFacingTowardsDrawPile(_ player: Player) async {
+        if let drawPile {
+            let playerPosition = player.position(relativeTo: drawPile.entity)
+            print("dealCards: before animation \(playerPosition)")
+            let drawPilePosition = drawPile.entity.position(relativeTo: nil)
+            let directionToDrawPile = normalize(drawPilePosition - playerPosition)
+            let forwardDirection = SIMD3<Float>(0, 0, -1)
+            let rotation = simd_quatf(from: forwardDirection, to: directionToDrawPile)
+            let animation = FromToByAnimation(
+                to: Transform(rotation: rotation, translation: player.position),
+                bindTarget: .transform
+            )
+            let animationResource = try! AnimationResource.generate(with: animation)
+            await player.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+            print("dealCards: after animation \(player.transform.translation)")
         }
     }
     

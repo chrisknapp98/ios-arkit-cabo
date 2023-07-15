@@ -13,16 +13,17 @@ class Player: Entity, HasModel, HasCollision {
     
     let identity: Int
     
+    let playerIconWidth: Float = 0.05
+    let playerIconHeight: Float = 0.0001
+    let playerIconDepth: Float = 0.05
+    
     init(identity: Int) {
         self.identity = identity
         super.init()
-        let x: Float = 0.05
-        let y: Float = 0.0001
-        let z: Float = 0.05
-        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: x, height: y, depth: z)])
+        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: playerIconWidth, height: playerIconHeight, depth: playerIconDepth)])
         
         
-        let mesh: MeshResource = .generatePlane(width: x, depth: z, cornerRadius: 8)
+        let mesh: MeshResource = .generatePlane(width: playerIconWidth, depth: playerIconDepth, cornerRadius: 8)
         
         var material = SimpleMaterial()
         if let image = UIImage(systemName: "person.circle.fill"),
@@ -48,37 +49,10 @@ class Player: Entity, HasModel, HasCollision {
         fatalError("init() has not been implemented")
     }
     
-}
-
-struct PlayerAlt {
-    let identity: Int
-    let entity: ModelEntity
-    
-    init(identity: Int) {
-        self.identity = identity
-        let x: Float = 0.05
-        let y: Float = 0.0001
-        let z: Float = 0.05
-        
-        let mesh: MeshResource = .generatePlane(width: x, depth: z, cornerRadius: 8)
-        
-        var material = SimpleMaterial()
-        if let image = UIImage(systemName: "person.circle.fill"),
-           let cgImage = image.cgImage,
-           let baseResource = try? TextureResource.generate(
-            from: cgImage,
-            options: TextureResource.CreateOptions(semantic: .color, mipmapsMode: .allocateAndGenerateAll)
-           ) {
-            material.color = SimpleMaterial.BaseColor(
-                tint: .white.withAlphaComponent(0.999),
-                texture: .init(baseResource)
-            )
-        }
-        material.metallic = .float(1.0)
-        material.roughness = .float(0.0)
-        
-        entity = ModelEntity(mesh: mesh, materials: [material], collisionShape: .generateBox(width: x, height: y, depth: z), mass: 0)
-        entity.name = "Player-\(identity)"
-        entity.generateCollisionShapes(recursive: true)
+    func distributeCardsEvenly() async {
+//        for playingCard in children {
+//
+//        }
     }
+    
 }

@@ -33,6 +33,8 @@ enum PlayingCard: Hashable {
     }
     
     static let thickness: Float = 0.00015
+    static let width: Float = 0.063
+    static let height: Float = 0.088
     
     var assetName: String {
         let prefix = "Playing_Card_"
