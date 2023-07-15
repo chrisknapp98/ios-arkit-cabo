@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
     private var drawPile: DrawPile?
+    private var discardPile: ModelEntity?
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
     
@@ -127,11 +128,27 @@ class ViewController: UIViewController {
         self.drawPile = drawPile
         placeDiscardPile()
     }
-    
+    // TODO: this is temporarily
     private func placeDiscardPile() {
-        guard let discardPile = drawPile?.discardPile, let anchor = discardPile.entity.anchor else { return }
-        arView.installGestures([.rotation, .translation], for: discardPile.entity)
-        arView.scene.addAnchor(anchor)
+        guard let drawPile = drawPile?.entity else { return }
+        let parentEntity = ModelEntity()
+        parentEntity.generateCollisionShapes(recursive: true)
+        
+        let drawPileTransform = drawPile.transformMatrix(relativeTo: nil)
+        let drawPileWorldPosition = SIMD3<Float>(drawPileTransform.columns.3.x,
+                                                 drawPileTransform.columns.3.y,
+                                                 drawPileTransform.columns.3.z)
+        var discardPilePosition = drawPileWorldPosition
+        discardPilePosition.x += 0.1
+        parentEntity.setPosition(discardPilePosition, relativeTo: nil)
+        
+        let discardPileAnchor = ARAnchor(transform: parentEntity.transformMatrix(relativeTo: nil))
+        let parentAnchor = AnchorEntity(anchor: discardPileAnchor)
+        parentAnchor.addChild(parentEntity)
+        
+        self.discardPile = parentEntity
+        arView.installGestures([.rotation, .translation], for: parentEntity)
+        arView.scene.addAnchor(parentAnchor)
     }
     
     // MARK: - Touch Interaction
@@ -150,7 +167,9 @@ class ViewController: UIViewController {
                     Task {
 //                        updateGameState(.inGame(.dealingCards)) // TODO: temporarily disabled to try this more than once
                         await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
-                        await drawPile?.moveLastCardToDiscardPile()
+//                        await drawPile?.moveLastCardToDiscardPile()
+                        // TODO: this is temporarily
+                        await moveCardToDiscardPile()
                     }
                     return
                 }
@@ -175,6 +194,24 @@ class ViewController: UIViewController {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
         }
+    }
+    // TODO: this is temporarily
+    private func moveCardToDiscardPile() async {
+        guard let drawPile, let discardPile else { return }
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: discardPile.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: discardPile.position(relativeTo: drawPile.entity)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        guard let playingCard = drawPile.entity.children.reversed().first else { return }
+        
+        await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+        drawPile.entity.removeChild(playingCard, preservingWorldTransform: true)
+        discardPile.addChild(playingCard, preservingWorldTransform: true)
     }
     
 }
