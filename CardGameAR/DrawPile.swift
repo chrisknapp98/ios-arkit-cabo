@@ -27,6 +27,27 @@ struct DrawPile {
     }
     
     @MainActor
+    func moveLastCardToDiscardPile(_ discardPile: DiscardPile) async {
+        let transform = Transform(
+            rotation: discardPile.entity.transform.rotation,
+            translation: discardPile.entity.position(relativeTo: entity)
+        )
+        await moveLastCardToEntity(discardPile.entity, transform: transform)
+    }
+    
+    @MainActor
+    private func moveLastCardToEntity(_ targetEntity: Entity, transform: Transform) async {
+        let animationDefinition1 = FromToByAnimation(to: transform, bindTarget: .transform)
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        guard let playingCard = entity.children.reversed().first else { return }
+        
+        await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+        entity.removeChild(playingCard, preservingWorldTransform: true)
+        targetEntity.addChild(playingCard, preservingWorldTransform: true)
+    }
+    
+    @MainActor
     func dealCards(cardsPerPlayer: Int, players: [Player]) async {
         for _ in 0..<cardsPerPlayer {
             for player in players {

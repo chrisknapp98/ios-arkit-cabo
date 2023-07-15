@@ -14,6 +14,7 @@
 		F3020EE929F592800011F0CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3020EE829F592800011F0CB /* Assets.xcassets */; };
 		F3020EEC29F592800011F0CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3020EEA29F592800011F0CB /* LaunchScreen.storyboard */; };
 		F32686E22A604528008760B0 /* EntityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E12A604528008760B0 /* EntityExtension.swift */; };
+		F32686E42A632EA8008760B0 /* DiscardPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E32A632EA8008760B0 /* DiscardPile.swift */; };
 		F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */; };
 		F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E72A431FD100117BF2 /* DrawPile.swift */; };
 		F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E92A43952600117BF2 /* CardGameError.swift */; };
@@ -91,6 +92,7 @@
 		F3020EE829F592800011F0CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3020EEB29F592800011F0CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F32686E12A604528008760B0 /* EntityExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityExtension.swift; sourceTree = "<group>"; };
+		F32686E32A632EA8008760B0 /* DiscardPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscardPile.swift; sourceTree = "<group>"; };
 		F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		F35040E72A431FD100117BF2 /* DrawPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawPile.swift; sourceTree = "<group>"; };
 		F35040E92A43952600117BF2 /* CardGameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGameError.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				F35040E92A43952600117BF2 /* CardGameError.swift */,
 				F3D399C52A4796FE009B6A77 /* GameState.swift */,
 				F3D399C72A47971C009B6A77 /* CallToActionView.swift */,
+				F32686E32A632EA8008760B0 /* DiscardPile.swift */,
 			);
 			path = CardGameAR;
 			sourceTree = "<group>";
@@ -490,6 +493,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F32686E42A632EA8008760B0 /* DiscardPile.swift in Sources */,
 				F3020EE229F5927F0011F0CB /* ViewController.swift in Sources */,
 				F3020EE029F5927F0011F0CB /* AppDelegate.swift in Sources */,
 				F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */,
