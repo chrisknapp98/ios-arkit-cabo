@@ -160,11 +160,7 @@ class ViewController: UIViewController {
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
-                        updateGameState(.inGame(.dealingCards))
-                        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
-                        if let discardPile {
-                            await drawPile?.moveLastCardToDiscardPile(discardPile)
-                        }
+                        await dealCards()
                     }
                     return
                 }
@@ -195,6 +191,33 @@ class ViewController: UIViewController {
             generator.notificationOccurred(.error)
         }
     }
+    
+    private func dealCards() async {
+        updateGameState(.inGame(.dealingCards))
+        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+        if let discardPile {
+            await drawPile?.moveLastCardToDiscardPile(discardPile)
+        }
+        for player in players {
+            await rotatePlayerFacingTowardsDrawPile(player)
+            await player.arrangeCardsInGridForPlayer(player: player)
+        }
+    }
+
+        func rotatePlayerFacingTowardsDrawPile(_ player: Player) async {
+            if let drawPile {
+                let playerPosition = player.position(relativeTo: nil)
+                let drawPilePosition = drawPile.entity.position(relativeTo: nil)
+                
+                player.look(at: drawPilePosition,
+                                   from: playerPosition,
+                                   relativeTo: nil)
+                
+                print("dealCards: after animation \(player.transform.translation)")
+            }
+        }
+
+
     
 }
 
