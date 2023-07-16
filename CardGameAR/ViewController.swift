@@ -200,27 +200,24 @@ class ViewController: UIViewController {
         }
         for player in players {
             await rotatePlayerFacingTowardsDrawPile(player)
-            await player.distributeCardsEvenly()
+            await player.arrangeCardsInGridForPlayer(player: player)
         }
     }
-    
-    private func rotatePlayerFacingTowardsDrawPile(_ player: Player) async {
-        if let drawPile {
-            let playerPosition = player.position(relativeTo: drawPile.entity)
-            print("dealCards: before animation \(playerPosition)")
-            let drawPilePosition = drawPile.entity.position(relativeTo: nil)
-            let directionToDrawPile = normalize(drawPilePosition - playerPosition)
-            let forwardDirection = SIMD3<Float>(0, 0, -1)
-            let rotation = simd_quatf(from: forwardDirection, to: directionToDrawPile)
-            let animation = FromToByAnimation(
-                to: Transform(rotation: rotation, translation: player.position),
-                bindTarget: .transform
-            )
-            let animationResource = try! AnimationResource.generate(with: animation)
-            await player.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
-            print("dealCards: after animation \(player.transform.translation)")
+
+        func rotatePlayerFacingTowardsDrawPile(_ player: Player) async {
+            if let drawPile {
+                let playerPosition = player.position(relativeTo: nil)
+                let drawPilePosition = drawPile.entity.position(relativeTo: nil)
+                
+                player.look(at: drawPilePosition,
+                                   from: playerPosition,
+                                   relativeTo: nil)
+                
+                print("dealCards: after animation \(player.transform.translation)")
+            }
         }
-    }
+
+
     
 }
 

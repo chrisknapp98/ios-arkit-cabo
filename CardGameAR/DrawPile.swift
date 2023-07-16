@@ -55,9 +55,6 @@ struct DrawPile {
                 await moveCardToPlayer(playingCard: playingCard, player: player)
             }
         }
-        for player in players {
-            await arrangeCardsInGridForPlayer(player: player)
-        }
     }
     
     @MainActor
@@ -79,45 +76,6 @@ struct DrawPile {
         entity.removeChild(playingCard, preservingWorldTransform: true)
         player.addChild(playingCard, preservingWorldTransform: true)
     }
-    
-    @MainActor
-    private func arrangeCardsInGridForPlayer(player: Player) async {
-        let cards = Array(player.children)
-        let gridWidth = 2
-        let gridHeight = cards.count / gridWidth
-        let cardSpacing: Float = 0.1  // adjust this to set the spacing between the cards
-
-        // Compute the total width and height of the grid
-        let totalWidth = cardSpacing * Float(gridWidth - 1)
-        let totalHeight = cardSpacing * Float(gridHeight - 1)
-
-        // Define an offset for the grid
-        let gridOffset = SIMD3<Float>(-totalWidth / 2, 0, -totalHeight)
-
-        for (index, card) in cards.enumerated() {
-            let row = index / gridWidth
-            let column = index % gridWidth
-            let offsetPosition = SIMD3<Float>(cardSpacing * Float(column), 0, -cardSpacing * Float(row))
-
-            let alignedCardRotation = (player.transform.rotation * simd_quatf(ix: 1, iy: 0, iz: 0, r: 0)) // card front facing to the plane
-            let animationDefinition1 = FromToByAnimation(
-                to: Transform(
-                    rotation: alignedCardRotation,
-                    translation: player.transform.translation + offsetPosition + gridOffset
-                ),
-                bindTarget: .transform
-            )
-            let animationResource = try! AnimationResource.generate(with: animationDefinition1)
-
-            await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
-        }
-    }
-
-
-
-
-
-
 
 
     
