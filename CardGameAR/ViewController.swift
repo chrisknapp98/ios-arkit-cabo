@@ -36,8 +36,8 @@ class ViewController: UIViewController {
             arView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
         arView.session.delegate = self
-//        arView.debugOptions = [.showAnchorOrigins, .showPhysics]
-//        arView.debugOptions = [.showPhysics]
+        //        arView.debugOptions = [.showAnchorOrigins, .showPhysics]
+        //        arView.debugOptions = [.showPhysics]
         arView.addCoaching()
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
@@ -56,9 +56,9 @@ class ViewController: UIViewController {
             configuration.frameSemantics.insert(.sceneDepth) // crashes on iPhone 11
         }
         // disabled because it's not applied although it seems to be available on iPhone 11
-//        if ARConfiguration.supportsFrameSemantics(.personSegmentationWithDepth) {
+        //        if ARConfiguration.supportsFrameSemantics(.personSegmentationWithDepth) {
         configuration.frameSemantics.insert(.personSegmentationWithDepth)
-//        }
+        //        }
         arView.session.run(configuration)
     }
     
@@ -168,112 +168,125 @@ class ViewController: UIViewController {
             }
         }
         
-        let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
-        if let firstResult = results.first {
-            if case let .preGame(state) = currentGameState.value {
-                if state == .placeDrawPile {
-                    let drawPileAnchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
-                    arView.session.add(anchor: drawPileAnchor)
-                    let discardPileAnchor = ARAnchor(
-                        name: DiscardPile.identifier,
-                        transform: transformForDiscardPile(drawPileTransform: firstResult.worldTransform)
-                    )
-                    arView.session.add(anchor: discardPileAnchor)
-                } else if state == .setPlayerPositions {
-                    let anchor = ARAnchor(name: "player_positions", transform: firstResult.worldTransform)
-                    arView.session.add(anchor: anchor)
+        if case let .inGame(state) = currentGameState.value {
+            let hits = arView.hitTest(location, query: .nearest, mask: .all)
+            let modelEntity = hits.first?.entity.parent as? ModelEntity
+            if  modelEntity?.name == DrawPile.identifier || modelEntity?.name == DiscardPile.identifier{
+                if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid})  {
+                    Task{
+                  await modelEntity?.moveCardToPlayerWithOffset(player: player)
+                    }
                 }
             }
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
-        } else {
-            print("Object placement failed. Couldn't find a surface.")
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.error)
         }
-    }
-    
-    private func dealCards() async {
-        updateGameState(.inGame(.dealingCards))
-        await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
-        if let discardPile {
-            await drawPile?.moveLastCardToDiscardPile(discardPile)
+            
+            let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
+            if let firstResult = results.first {
+                if case let .preGame(state) = currentGameState.value {
+                    if state == .placeDrawPile {
+                        let drawPileAnchor = ARAnchor(name: DrawPile.identifier, transform: firstResult.worldTransform)
+                        arView.session.add(anchor: drawPileAnchor)
+                        let discardPileAnchor = ARAnchor(
+                            name: DiscardPile.identifier,
+                            transform: transformForDiscardPile(drawPileTransform: firstResult.worldTransform)
+                        )
+                        arView.session.add(anchor: discardPileAnchor)
+                    } else if state == .setPlayerPositions {
+                        let anchor = ARAnchor(name: "player_positions", transform: firstResult.worldTransform)
+                        arView.session.add(anchor: anchor)
+                    }
+                }
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+            } else {
+                print("Object placement failed. Couldn't find a surface.")
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.error)
+            }
         }
-        for player in players {
-            await rotatePlayerFacingTowardsDrawPile(player)
-            await player.arrangeCardsInGridForPlayer(player: player)
+        
+        
+        private func dealCards() async {
+            updateGameState(.inGame(.dealingCards))
+            await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
+            if let discardPile {
+                await drawPile?.moveLastCardToDiscardPile(discardPile)
+            }
+            for player in players {
+                await rotatePlayerFacingTowardsDrawPile(player)
+                await player.arrangeCardsInGridForPlayer(player: player)
+            }
         }
-    }
-
-        func rotatePlayerFacingTowardsDrawPile(_ player: Player) async {
+        
+        func rotatePlayerFacingTowardsDrawPile(_ player: Player)  {
             if let drawPile {
                 let playerPosition = player.position(relativeTo: nil)
                 let drawPilePosition = drawPile.entity.position(relativeTo: nil)
                 
                 player.look(at: drawPilePosition,
-                                   from: playerPosition,
-                                   relativeTo: nil)
+                            from: playerPosition,
+                            relativeTo: nil)
                 
                 print("dealCards: after animation \(player.transform.translation)")
             }
         }
-
-    private func startGame() {
-        let randomPlayerIndex = Int.random(in: 0..<players.count)
-        updateGameState(.inGame(.currentTurn(randomPlayerIndex)))
-        for player in players {
-            if player.identity != randomPlayerIndex {
-                player.hideAvatar()
-            }
-        }
-    }
-    
-}
-
-// MARK: - ARView Coaching Overlay
-
-extension ARView: ARCoachingOverlayViewDelegate {
-    func addCoaching() {
-        let coachingOverlay = ARCoachingOverlayView()
-        coachingOverlay.delegate = self
-        coachingOverlay.session = self.session
-        coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        coachingOverlay.layer.position = CGPoint(x: self.bounds.size.width/2, y: self.bounds.size.height/2)
-        coachingOverlay.goal = .horizontalPlane
-        self.addSubview(coachingOverlay)
-    }
-    
-    public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        // Ready to add entities next?
-        // Maybe automatically add the card deck in the middle of the table after a surface has been identified
-    }
-}
-
-// MARK: - ARSessionDelegate
-
-extension ViewController: ARSessionDelegate {
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        for anchor in anchors {
-            // TODO: introduce some sort of game state to match the expected anchorName
-            if let anchorName = anchor.name, anchorName == DrawPile.identifier {
-                Task {
-                    await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
-                    updateGameState(.preGame(.setPlayerPositions))
+        
+        private func startGame() {
+            let randomPlayerIndex = Int.random(in: 0..<players.count)
+            updateGameState(.inGame(.currentTurn(randomPlayerIndex)))
+            for player in players {
+                if player.identity != randomPlayerIndex {
+                    player.hideAvatar()
                 }
-            } else if let anchorName = anchor.name, anchorName == DiscardPile.identifier {
-                placeDiscardPile(for: anchor)
-            } else if let anchorName = anchor.name, anchorName == "player_positions" {
-                setPlayerPosition(for: anchor)
             }
+        }
+        
+    }
+    
+    // MARK: - ARView Coaching Overlay
+    
+    extension ARView: ARCoachingOverlayViewDelegate {
+        func addCoaching() {
+            let coachingOverlay = ARCoachingOverlayView()
+            coachingOverlay.delegate = self
+            coachingOverlay.session = self.session
+            coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            coachingOverlay.layer.position = CGPoint(x: self.bounds.size.width/2, y: self.bounds.size.height/2)
+            coachingOverlay.goal = .horizontalPlane
+            self.addSubview(coachingOverlay)
+        }
+        
+        public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
+            // Ready to add entities next?
+            // Maybe automatically add the card deck in the middle of the table after a surface has been identified
         }
     }
     
-    private func setPlayerPosition(for anchor: ARAnchor) {
-        let entity = Player(identity: players.count)
-        arView.installGestures([.translation], for: entity)
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(entity)
-        arView.scene.addAnchor(anchorEntity)
-        players.append(entity)
+    // MARK: - ARSessionDelegate
+    
+    extension ViewController: ARSessionDelegate {
+        func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+            for anchor in anchors {
+                // TODO: introduce some sort of game state to match the expected anchorName
+                if let anchorName = anchor.name, anchorName == DrawPile.identifier {
+                    Task {
+                        await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
+                        updateGameState(.preGame(.setPlayerPositions))
+                    }
+                } else if let anchorName = anchor.name, anchorName == DiscardPile.identifier {
+                    placeDiscardPile(for: anchor)
+                } else if let anchorName = anchor.name, anchorName == "player_positions" {
+                    setPlayerPosition(for: anchor)
+                }
+            }
+        }
+        
+        private func setPlayerPosition(for anchor: ARAnchor) {
+            let entity = Player(identity: players.count)
+            arView.installGestures([.translation], for: entity)
+            let anchorEntity = AnchorEntity(anchor: anchor)
+            anchorEntity.addChild(entity)
+            arView.scene.addAnchor(anchorEntity)
+            players.append(entity)
+        }
     }
-}
