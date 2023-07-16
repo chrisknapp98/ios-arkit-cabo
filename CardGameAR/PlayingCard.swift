@@ -35,33 +35,33 @@ enum PlayingCard: Hashable {
     static let thickness: Float = 0.00015
     static let width: Float = 0.063
     static let height: Float = 0.088
+    static let prefix = "Playing_Card_"
     
     var assetName: String {
-        let prefix = "Playing_Card_"
         switch self {
         case .blue(let type):
             let blue = "Blue"
             switch type {
             case .clubs(let value):
-                return "\(prefix)\(blue)_C_\(value.rawValue)"
+                return "\(Self.prefix)\(blue)_C_\(value.rawValue)"
             case .diamonds(let value):
-                return "\(prefix)\(blue)_D_\(value.rawValue)"
+                return "\(Self.prefix)\(blue)_D_\(value.rawValue)"
             case .hearts(let value):
-                return "\(prefix)\(blue)_H_\(value.rawValue)"
+                return "\(Self.prefix)\(blue)_H_\(value.rawValue)"
             case .spades(let value):
-                return "\(prefix)\(blue)_S_\(value.rawValue)"
+                return "\(Self.prefix)\(blue)_S_\(value.rawValue)"
             }
         case .red(let type):
             let red = "Red"
             switch type {
             case .clubs(let value):
-                return "\(prefix)\(red)_C_\(value.rawValue)"
+                return "\(Self.prefix)\(red)_C_\(value.rawValue)"
             case .diamonds(let value):
-                return "\(prefix)\(red)_D_\(value.rawValue)"
+                return "\(Self.prefix)\(red)_D_\(value.rawValue)"
             case .hearts(let value):
-                return "\(prefix)\(red)_H_\(value.rawValue)"
+                return "\(Self.prefix)\(red)_H_\(value.rawValue)"
             case .spades(let value):
-                return "\(prefix)\(red)_S_\(value.rawValue)"
+                return "\(Self.prefix)\(red)_S_\(value.rawValue)"
             }
         }
     }

@@ -161,6 +161,7 @@ class ViewController: UIViewController {
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
                         await dealCards()
+                        startGame()
                     }
                     return
                 }
@@ -217,7 +218,15 @@ class ViewController: UIViewController {
             }
         }
 
-
+    private func startGame() {
+        let randomPlayerIndex = Int.random(in: 0..<players.count)
+        updateGameState(.inGame(.currentTurn(randomPlayerIndex)))
+        for player in players {
+            if player.identity != randomPlayerIndex {
+                player.hideAvatar()
+            }
+        }
+    }
     
 }
 

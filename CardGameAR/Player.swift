@@ -17,11 +17,17 @@ class Player: Entity, HasModel, HasCollision {
     let playerIconHeight: Float = 0.0001
     let playerIconDepth: Float = 0.05
     
+    var avatar: ModelEntity
+    
     init(identity: Int) {
         self.identity = identity
+        // Create a separate entity for the avatar
+        avatar = ModelEntity()
         super.init()
-        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: playerIconWidth, height: playerIconHeight, depth: playerIconDepth)])
         
+        self.addChild(avatar)
+        
+        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: playerIconWidth, height: playerIconHeight, depth: playerIconDepth)])
         
         let mesh: MeshResource = .generatePlane(width: playerIconWidth, depth: playerIconDepth, cornerRadius: 8)
         
@@ -40,7 +46,7 @@ class Player: Entity, HasModel, HasCollision {
         material.metallic = .float(1.0)
         material.roughness = .float(0.0)
         
-        self.components[ModelComponent.self] = ModelComponent(mesh: mesh, materials: [material])
+        avatar.components[ModelComponent.self] = ModelComponent(mesh: mesh, materials: [material]) // Set the model on the avatar
         self.name = "Player-\(identity)"
         generateCollisionShapes(recursive: true)
     }
@@ -51,7 +57,7 @@ class Player: Entity, HasModel, HasCollision {
     
     @MainActor
         func arrangeCardsInGridForPlayer(player: Player) async {
-            let cards = Array(player.children)
+            let cards = Array(player.children).filter { $0.name.contains(PlayingCard.prefix) }
             let gridWidth = 2
             let gridHeight = cards.count / gridWidth
             let cardSpacing: Float = 0.1  // adjust this to set the spacing between the cards
@@ -94,6 +100,11 @@ class Player: Entity, HasModel, HasCollision {
             }
 
         }
+
+    
+    func hideAvatar() {
+        avatar.isEnabled = false
+    }
 
 
 
