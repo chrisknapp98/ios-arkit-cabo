@@ -15,6 +15,7 @@ struct DiscardPile {
     
     init() {
         entity = ModelEntity()
+        entity.name = Self.identifier
     }
     
 }
