@@ -54,6 +54,7 @@ extension Entity {
         await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
         removeChild(playingCard, preservingWorldTransform: true)
         player.addChild(playingCard, preservingWorldTransform: true)
+        player.setDrawnCard(playingCard)
     }
     
 }

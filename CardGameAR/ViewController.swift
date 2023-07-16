@@ -170,14 +170,22 @@ class ViewController: UIViewController {
         
         if case let .inGame(state) = currentGameState.value {
             let hits = arView.hitTest(location, query: .nearest, mask: .all)
-            let modelEntity = hits.first?.entity.parent as? ModelEntity
-            if  modelEntity?.name == DrawPile.identifier || modelEntity?.name == DiscardPile.identifier {
+            let modelEntity = hits.first?.entity as? ModelEntity
+            if let parentEntity = modelEntity?.parent, parentEntity.name == DrawPile.identifier || parentEntity.name == DiscardPile.identifier {
                 if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid}) {
-                    Task{
-                        await modelEntity?.moveCardToPlayerWithOffset(player: player)
+                    Task {
+                        await parentEntity.moveCardToPlayerWithOffset(player: player)
+                        updateGameState(.inGame(.discardCards(playerid))) // TODO: change to action card
                     }
                 }
             }
+            if case let .discardCards(playerId) = state, let player = players.first(where:{ $0.identity == playerId}),
+               let modelEntity, let discardPile {
+                Task {
+                    await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                }
+            }
+            return
         }
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)

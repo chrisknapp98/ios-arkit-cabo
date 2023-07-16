@@ -18,6 +18,7 @@ enum GameState: Equatable {
     enum InGameState: Equatable {
         case dealingCards
         case currentTurn(_ playerId: Int)
+        case discardCards(_ playerId: Int)
     }
     
     case preGame(_ state: PreGameState)

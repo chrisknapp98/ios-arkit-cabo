@@ -17,7 +17,9 @@ class Player: Entity, HasModel, HasCollision {
     let playerIconHeight: Float = 0.0001
     let playerIconDepth: Float = 0.05
     
-    var avatar: ModelEntity
+    private var avatar: ModelEntity
+    private var currentlyDrawnCard: Entity?
+    private var cardsToDiscard: [Entity] = []
     
     init(identity: Int) {
         self.identity = identity
@@ -105,4 +107,59 @@ class Player: Entity, HasModel, HasCollision {
         avatar.isEnabled = false
     }
     
+    func setDrawnCard(_ card: Entity) {
+        currentlyDrawnCard = card
+    }
+    
+    func didInteractWithCard(_ card: Entity, discardPile: DiscardPile) async {
+        if card != currentlyDrawnCard {
+            cardsToDiscard.append(card)
+            await turnCard(card)
+        } else {
+            if allMemorizedCardsMatchDrawnCard() {
+                await discardMemorizedCards()
+            } else {
+                for wronglyGuessedCard in cardsToDiscard {
+                    await turnCard(wronglyGuessedCard)
+                }
+            }
+            await discardDrawnCard()
+            cardsToDiscard = []
+        }
+    }
+    
+    private func turnCard(_ card: Entity) async {
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: card.transform.translation
+            ),
+            bindTarget: .transform
+        )
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+    }
+    
+    private func allMemorizedCardsMatchDrawnCard() -> Bool {
+        cardsToDiscard.allSatisfy { cardsToDiscard in
+            cardsToDiscard.name.getPlayingCardValue() == currentlyDrawnCard?.name.getPlayingCardValue()
+        }
+    }
+    
+    private func discardMemorizedCards() async {
+        // TODO: play animation
+    }
+    
+    private func discardDrawnCard() async {
+        // TODO: discard animated
+    }
+    
+}
+
+extension String {
+    func getPlayingCardValue() -> Int {
+        let numberString = String(split(separator: "_").last ?? "")
+        return Int(numberString) ?? 0
+    }
 }

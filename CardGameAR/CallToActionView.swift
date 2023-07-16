@@ -65,6 +65,8 @@ struct CallToActionView: View {
             break
         case .currentTurn(let playerId):
             callToAction = "Player \(playerId)'s turn!"
+        case .discardCards(let playerId):
+            callToAction = "Player \(playerId), select matching covered cards\nand discard by tapping the drawn card"
         }
     }
 }
