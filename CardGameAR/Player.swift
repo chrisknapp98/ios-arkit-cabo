@@ -117,13 +117,13 @@ class Player: Entity, HasModel, HasCollision {
             await turnCard(card)
         } else {
             if allMemorizedCardsMatchDrawnCard() {
-                await discardMemorizedCards()
+                await discardMemorizedCards(to: discardPile)
             } else {
                 for wronglyGuessedCard in cardsToDiscard {
                     await turnCard(wronglyGuessedCard)
                 }
             }
-            await discardDrawnCard()
+            await discardDrawnCard(to: discardPile)
             cardsToDiscard = []
         }
     }
@@ -147,12 +147,33 @@ class Player: Entity, HasModel, HasCollision {
         }
     }
     
-    private func discardMemorizedCards() async {
-        // TODO: play animation
+    private func discardMemorizedCards(to discardPile: DiscardPile) async {
+        for card in cardsToDiscard {
+            let transform = Transform(
+                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(1, 0, 0)),
+                translation: discardPile.entity.position(relativeTo: self)
+            )
+            await discardCard(card, with: transform, to: discardPile)
+        }
     }
     
-    private func discardDrawnCard() async {
-        // TODO: discard animated
+    private func discardDrawnCard(to discardPile: DiscardPile) async {
+        guard let currentlyDrawnCard else { return }
+        let transform = Transform(
+            rotation: currentlyDrawnCard.transform.rotation,
+            translation: discardPile.entity.position(relativeTo: self)
+        )
+        await discardCard(currentlyDrawnCard, with: transform, to: discardPile)
+        self.currentlyDrawnCard = nil
+    }
+    
+    private func discardCard(_ card: Entity, with transform: Transform, to discardPile: DiscardPile) async {
+        let animationDefinition1 = FromToByAnimation(to: transform, bindTarget: .transform)
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+        removeChild(card, preservingWorldTransform: true)
+        discardPile.entity.addChild(card, preservingWorldTransform: true)
     }
     
 }
