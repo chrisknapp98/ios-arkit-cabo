@@ -63,6 +63,8 @@ struct CallToActionView: View {
         case .dealingCards:
             callToAction = "Dealing Cards..."
             break
+        case .currentTurn(let playerId):
+            callToAction = "Player \(playerId)'s turn!"
         }
     }
 }
