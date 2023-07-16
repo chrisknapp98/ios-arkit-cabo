@@ -28,14 +28,14 @@ extension Entity {
         
         guard let playingCard = children.reversed().first else { return }
         var targetTransformRotation = playingCard.transform.rotation
-        if(name == DrawPile.identifier) {
+        if name == DrawPile.identifier {
             targetTransformRotation *= simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1))
         }
         
         // Get the player's rotation matrix and extract the z-axis vector
         let playerRotationMatrix = simd_float3x3(player.transform.rotation)
         let playerZAxisDirection = playerRotationMatrix.columns.2  // Use z-axis vector here
-
+        
         // Create a quaternion for the player's z-axis direction
         let playerZRotation = simd_quatf(from: SIMD3(x: 0, y: 0, z: 1), to: playerZAxisDirection)  // Use z-axis here
         
@@ -55,5 +55,5 @@ extension Entity {
         removeChild(playingCard, preservingWorldTransform: true)
         player.addChild(playingCard, preservingWorldTransform: true)
     }
-
+    
 }

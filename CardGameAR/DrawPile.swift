@@ -76,8 +76,6 @@ struct DrawPile {
         entity.removeChild(playingCard, preservingWorldTransform: true)
         player.addChild(playingCard, preservingWorldTransform: true)
     }
-
-
     
     private static func createModelEntity(
         with cards: [PlayingCard],
