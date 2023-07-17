@@ -220,7 +220,7 @@ class ViewController: UIViewController {
         if case let .preGame(state) = currentGameState.value {
             if state == .setPlayerPositions {
                 let hits = arView.hitTest(location, query: .nearest, mask: .all)
-                if let playerEntity = hits.first?.entity as? Player {
+                if let playerEntity = hits.first?.entity.parent as? Player {
                     playerEntity.removeFromParent()
                     players.remove(at: playerEntity.identity)
                     return
