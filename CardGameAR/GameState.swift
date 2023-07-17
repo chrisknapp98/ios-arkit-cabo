@@ -14,6 +14,7 @@ enum GameState: Equatable {
         case loadingAssets
         case placeDrawPile
         case setPlayerPositions
+        case regardCards
     }
     
     enum InGameState: Equatable {

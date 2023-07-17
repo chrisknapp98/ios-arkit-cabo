@@ -94,6 +94,8 @@ struct CallToActionView: View {
         case .setPlayerPositions:
             callToAction = "Set Player Positions and tap on \ndraw pile to deal the cards"
             break
+        case .regardCards:
+            callToAction = "Take a look at 2 of your cards and pass the device. Tap on draw pile to start the game"
         }
     }
     
