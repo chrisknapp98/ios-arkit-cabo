@@ -23,9 +23,9 @@ struct UndoView: View {
         .buttonStyle(.borderedProminent)
         .onReceive(gameState) { gameState in
             if case let .inGame(state) = gameState {
-                if case let .selectedInteractionType(playerId, _) = state {
+                if case let .selectedInteractionType(playerId, _, cardValue) = state {
                     undoAction = { [updateGameStateAction] in
-                        updateGameStateAction(.inGame(.waitForInteractionTypeSelection(playerId)))
+                        updateGameStateAction(.inGame(.waitForInteractionTypeSelection(playerId, cardValue: cardValue)))
                     }
                 }
             }

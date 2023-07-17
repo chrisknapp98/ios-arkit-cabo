@@ -90,6 +90,7 @@ extension PlayingCard {
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .hearts(value: $0)) },
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .spades(value: $0)) }
         ].flatMap { $0 }
+            .shuffled()
     }
 }
 

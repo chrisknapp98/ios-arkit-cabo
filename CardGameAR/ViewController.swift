@@ -59,11 +59,11 @@ class ViewController: UIViewController {
             switch gameState {
             case .inGame(let state):
                 switch state {
-                case .waitForInteractionTypeSelection(_):
+                case .waitForInteractionTypeSelection:
                     self?.callToActionView?.isUserInteractionEnabled = true
                     self?.undoView?.isHidden = true
                     break
-                case .selectedInteractionType(_, _):
+                case .selectedInteractionType:
                     self?.callToActionView?.isUserInteractionEnabled = false
                     self?.undoView?.isHidden = false
                     break
@@ -238,36 +238,72 @@ class ViewController: UIViewController {
             let hits = arView.hitTest(location, query: .nearest, mask: .all)
             let modelEntity = hits.first?.entity as? ModelEntity
             if let parentEntity = modelEntity?.parent, parentEntity.name == DrawPile.identifier || parentEntity.name == DiscardPile.identifier {
-                if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid}) {
+                if case let .currentTurn(playerid) = state,
+                   let player = players.first(where:{ $0.identity == playerid}),
+                   let cardValue = modelEntity?.name.getPlayingCardValue() {
                     Task {
                         await parentEntity.moveCardToPlayerWithOffset(player: player)
-                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid)))
+                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid, cardValue: cardValue)))
                     }
                 }
             }
-            if case let .selectedInteractionType(playerId, interactionType) = state, let player = players.first(where:{ $0.identity == playerId}),
-               let modelEntity, let discardPile {
+            if case let .selectedInteractionType(playerId, interactionType, _) = state,
+               let player = players.first(where:{ $0.identity == playerId}),
+               let modelEntity, let discardPile,
+               let anyPlayer = modelEntity.parent as? Player {
                 switch interactionType {
                 case .discard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                        if anyPlayer.identity == playerId {
                             let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
-                            if didEndTurn, let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
-                                updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            if didEndTurn {
+                                endTurn(currentPlayerId: playerId)
                             }
                         }
                     }
                     break
                 case .swapDrawnWithOwnCard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId,
-                           let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
+                        if anyPlayer.identity == playerId {
                             await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
-                            updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            endTurn(currentPlayerId: playerId)
                         }
                     }
                     break
-                case .performAction:
+                case .performAction(let cardAction):
+                    switch cardAction {
+                    case .peek:
+                        Task {
+                            if anyPlayer.identity == playerId {
+                                await player.peekCard(card: modelEntity, discardPile: discardPile)
+                                endTurn(currentPlayerId: playerId)
+                            }
+                        }
+                        break
+                    case .spy:
+                        Task {
+                            if anyPlayer.identity != playerId {
+                                await player.peekCard(card: modelEntity, discardPile: discardPile)
+                                endTurn(currentPlayerId: playerId)
+                            }
+                        }
+                        break
+                    case .swap(let memorizedCard):
+                        Task {
+                            if let memorizedCard {
+                                if memorizedCard.parent != modelEntity.parent {
+                                    await player.swapCards(card1: modelEntity, card2: memorizedCard, discardPile: discardPile)
+                                    endTurn(currentPlayerId: playerId)
+                                }
+                            } else {
+                                let cardValue = modelEntity.name.getPlayingCardValue()
+                                updateGameState(.inGame(.selectedInteractionType(playerId, .performAction(.swap(memorizedCard: modelEntity)), cardValue: cardValue)))
+                            }
+                        }
+                        break
+                    case .anyAction:
+                        break
+                    }
                     break
                 }
             }
@@ -320,8 +356,6 @@ class ViewController: UIViewController {
             player.look(at: drawPilePosition,
                         from: playerPosition,
                         relativeTo: nil)
-            
-            print("dealCards: after animation \(player.transform.translation)")
         }
     }
     
@@ -345,6 +379,11 @@ class ViewController: UIViewController {
         } else {
             return playersIndexInArray + 1
         }
+    }
+    
+    private func endTurn(currentPlayerId: Int) {
+        guard let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: currentPlayerId) else { return }
+        updateGameState(.inGame(.currentTurn(nextPlayerId)))
     }
     
 }

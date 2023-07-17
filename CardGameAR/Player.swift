@@ -220,6 +220,65 @@ class Player: Entity, HasModel, HasCollision {
         await discardDrawnCard(to: discardPile)
     }
     
+    // MARK: - Card Actions
+    
+    func peekCard(card: Entity, discardPile: DiscardPile) async {
+        await turnCard(card)
+        try? await Task.sleep(for: .seconds(2))
+        await turnCard(card)
+        await discardDrawnCard(to: discardPile)
+    }
+    
+    func swapCards(card1: Entity, card2: Entity, discardPile: DiscardPile) async {
+        let ownCard = card1.parent == self ? card1 : card2
+        let opponentsCard = card1.parent != self ? card1 : card2
+        let opponentsPlayer = card1.parent != self ? card1.parent : card2.parent
+        
+        if ownCard == currentlyDrawnCard {
+            currentlyDrawnCard = opponentsCard
+        }
+        
+        // Get the global positions and rotations of the cards
+        let ownCardGlobalTransform = ownCard.transformMatrix(relativeTo: nil)
+        let opponentsCardGlobalTransform = opponentsCard.transformMatrix(relativeTo: nil)
+        
+        // Compute the transforms of the cards in the other players' local coordinate systems
+        let ownCardInOpponentsCoordinates = opponentsPlayer!.transformMatrix(relativeTo: nil).inverse * ownCardGlobalTransform
+        let opponentsCardInOwnCoordinates = self.transformMatrix(relativeTo: nil).inverse * opponentsCardGlobalTransform
+        
+        // Create the animation definitions
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(matrix: opponentsCardInOwnCoordinates),
+            bindTarget: .transform
+        )
+        let animationDefinition2 = FromToByAnimation(
+            to: Transform(matrix: ownCardInOpponentsCoordinates),
+            bindTarget: .transform
+        )
+        let animationResource1 = try! AnimationResource.generate(with: animationDefinition1)
+        let animationResource2 = try! AnimationResource.generate(with: animationDefinition2)
+        
+        // Play the animations
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await ownCard.playAnimationAsync(animationResource1, transitionDuration: 1, startsPaused: false)
+            }
+            group.addTask {
+                await opponentsCard.playAnimationAsync(animationResource2, transitionDuration: 1, startsPaused: false)
+            }
+        }
+        
+        // Swap the parents of the cards
+        let ownCardParent = ownCard.parent
+        let opponentsCardParent = opponentsCard.parent
+        ownCardParent?.removeChild(ownCard, preservingWorldTransform: true)
+        opponentsCardParent?.removeChild(opponentsCard, preservingWorldTransform: true)
+        ownCardParent?.addChild(opponentsCard, preservingWorldTransform: true)
+        opponentsCardParent?.addChild(ownCard, preservingWorldTransform: true)
+        
+        await discardDrawnCard(to: discardPile)
+    }
+    
 }
 
 extension String {
