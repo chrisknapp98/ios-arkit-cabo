@@ -242,11 +242,16 @@ class ViewController: UIViewController {
                 case .discard:
                     Task {
                         if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
-                            await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                            await player.didSelectCardToDiscard(modelEntity, discardPile: discardPile)
                         }
                     }
                     break
                 case .swapDrawnWithOwnCard:
+                    Task {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                            await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
+                        }
+                    }
                     break
                 case .performAction:
                     break

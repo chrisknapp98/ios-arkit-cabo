@@ -111,7 +111,7 @@ class Player: Entity, HasModel, HasCollision {
         currentlyDrawnCard = card
     }
     
-    func didInteractWithCard(_ card: Entity, discardPile: DiscardPile) async {
+    func didSelectCardToDiscard(_ card: Entity, discardPile: DiscardPile) async {
         if card != currentlyDrawnCard {
             cardsToDiscard.append(card)
             await turnCard(card)
@@ -174,6 +174,40 @@ class Player: Entity, HasModel, HasCollision {
         await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
         removeChild(card, preservingWorldTransform: true)
         discardPile.entity.addChild(card, preservingWorldTransform: true)
+    }
+    
+    func swapDrawnCardWithOwnCoveredCard(card: Entity, discardPile: DiscardPile) async {
+        guard let currentlyDrawnCard else {
+            print("Currently no card drawn")
+            return
+        }
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: self.position
+            ),
+            bindTarget: .transform
+        )
+        let animationDefinition2 = FromToByAnimation(
+            to: Transform(
+                rotation: currentlyDrawnCard.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: card.position(relativeTo: self)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource1 = try! AnimationResource.generate(with: animationDefinition1)
+        let animationResource2 = try! AnimationResource.generate(with: animationDefinition2)
+        
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await card.playAnimationAsync(animationResource1, transitionDuration: 1, startsPaused: false)
+            }
+            group.addTask {
+                await currentlyDrawnCard.playAnimationAsync(animationResource2, transitionDuration: 1, startsPaused: false)
+            }
+        }
+        self.currentlyDrawnCard = card
+        await discardDrawnCard(to: discardPile)
     }
     
 }
