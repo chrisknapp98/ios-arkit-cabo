@@ -103,6 +103,10 @@ class Player: Entity, HasModel, HasCollision {
         
     }
     
+    func showAvatar() {
+        avatar.isEnabled = true
+    }
+    
     func hideAvatar() {
         avatar.isEnabled = false
     }
@@ -111,10 +115,11 @@ class Player: Entity, HasModel, HasCollision {
         currentlyDrawnCard = card
     }
     
-    func didSelectCardToDiscard(_ card: Entity, discardPile: DiscardPile) async {
+    func didDiscardDrawnCardOnCardSelection(_ card: Entity, discardPile: DiscardPile) async -> Bool {
         if card != currentlyDrawnCard {
             cardsToDiscard.append(card)
             await turnCard(card)
+            return false
         } else {
             if allMemorizedCardsMatchDrawnCard() {
                 await discardMemorizedCards(to: discardPile)
@@ -125,6 +130,7 @@ class Player: Entity, HasModel, HasCollision {
             }
             await discardDrawnCard(to: discardPile)
             cardsToDiscard = []
+            return true
         }
     }
     

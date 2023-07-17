@@ -134,6 +134,16 @@ class ViewController: UIViewController {
     
     @MainActor
     private func updateGameState(_ gameState: GameState) {
+        if case let .inGame(state) = currentGameState.value {
+            if case let .currentTurn(playerId) = state {
+                players.first(where: { $0.identity == playerId })?.hideAvatar()
+            }
+        }
+        if case let .inGame(state) = gameState {
+            if case let .currentTurn(playerId) = state {
+                players.first(where: { $0.identity == playerId })?.showAvatar()
+            }
+        }
         currentGameState.send(gameState)
     }
     
@@ -242,14 +252,19 @@ class ViewController: UIViewController {
                 case .discard:
                     Task {
                         if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
-                            await player.didSelectCardToDiscard(modelEntity, discardPile: discardPile)
+                            let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
+                            if didEndTurn, let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
+                                updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            }
                         }
                     }
                     break
                 case .swapDrawnWithOwnCard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId,
+                           let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
                             await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
+                            updateGameState(.inGame(.currentTurn(nextPlayerId)))
                         }
                     }
                     break
@@ -321,8 +336,16 @@ class ViewController: UIViewController {
         }
     }
     
-    private func handleInteractionType(_ interactionType: CardInteraction) {
+    private func nextPlayerIdentityInOrder(currentPlayerId: Int) -> Int? {
+        guard let currentPlayer = players.first(where: { $0.identity == currentPlayerId }),
+              let playersIndexInArray = players.firstIndex(of: currentPlayer)
+        else { return nil }
         
+        if playersIndexInArray == players.count - 1 {
+            return 0
+        } else {
+            return playersIndexInArray + 1
+        }
     }
     
 }
