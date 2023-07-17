@@ -16,11 +16,13 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
-//    private let currentGameState = CurrentValueSubject<GameState, Never>(.inGame(.waitForInteractionTypeSelection(0)))
+//    private let currentGameState = CurrentValueSubject<GameState, Never>(.inGame(.selectedInteractionType(0, .discard)))
     private var drawPile: DrawPile?
     private var discardPile: DiscardPile?
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
+    private var callToActionView: UIView?
+    private var undoView: UIView?
     
     private let cardsPerPlayer: Int = 4
     
@@ -43,6 +45,7 @@ class ViewController: UIViewController {
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
         addCallToActionView()
+        addUndoView()
         Task {
             await preloadAllModelEntities()
             arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
@@ -57,12 +60,16 @@ class ViewController: UIViewController {
             case .inGame(let state):
                 switch state {
                 case .waitForInteractionTypeSelection(_):
-                    self?.arView.subviews.forEach { $0.isUserInteractionEnabled = true }
+                    self?.callToActionView?.isUserInteractionEnabled = true
+                    self?.undoView?.isHidden = true
                     break
                 case .selectedInteractionType(_, _):
-                    self?.arView.subviews.forEach { $0.isUserInteractionEnabled = false }
+                    self?.callToActionView?.isUserInteractionEnabled = false
+                    self?.undoView?.isHidden = false
                     break
-                default: break
+                default:
+                    self?.undoView?.isHidden = true
+                    break
                 }
                 break
             default:
@@ -94,6 +101,7 @@ class ViewController: UIViewController {
         )
         hostingController.view.backgroundColor = .clear
         hostingController.view.isUserInteractionEnabled = false
+        callToActionView = hostingController.view
         arView.addSubview(hostingController.view)
         hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -101,6 +109,26 @@ class ViewController: UIViewController {
             hostingController.view.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: arView.bottomAnchor)
+        ])
+    }
+    
+    private func addUndoView() {
+        let hostingController = UIHostingController(rootView: UndoView(
+            gameState: currentGameState.eraseToAnyPublisher(),
+            updateGameStateAction: { gameState in
+                self.updateGameState(gameState)
+            }
+        ))
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.isUserInteractionEnabled = true
+        undoView = hostingController.view
+        arView.addSubview(hostingController.view)
+        hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: arView.topAnchor, constant: 130),
+            hostingController.view.leadingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -100),
+            hostingController.view.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: arView.topAnchor, constant: 180)
         ])
     }
     
