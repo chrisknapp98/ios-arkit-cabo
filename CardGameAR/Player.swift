@@ -233,20 +233,19 @@ class Player: Entity, HasModel, HasCollision {
         let ownCard = card1.parent == self ? card1 : card2
         let opponentsCard = card1.parent != self ? card1 : card2
         let opponentsPlayer = card1.parent != self ? card1.parent : card2.parent
-
-        guard let currentlyDrawnCard = self.currentlyDrawnCard else {
-            print("Currently no card drawn")
-            return
+        
+        if ownCard == currentlyDrawnCard {
+            currentlyDrawnCard = opponentsCard
         }
-
+        
         // Get the global positions and rotations of the cards
         let ownCardGlobalTransform = ownCard.transformMatrix(relativeTo: nil)
         let opponentsCardGlobalTransform = opponentsCard.transformMatrix(relativeTo: nil)
-
+        
         // Compute the transforms of the cards in the other players' local coordinate systems
         let ownCardInOpponentsCoordinates = opponentsPlayer!.transformMatrix(relativeTo: nil).inverse * ownCardGlobalTransform
         let opponentsCardInOwnCoordinates = self.transformMatrix(relativeTo: nil).inverse * opponentsCardGlobalTransform
-
+        
         // Create the animation definitions
         let animationDefinition1 = FromToByAnimation(
             to: Transform(matrix: opponentsCardInOwnCoordinates),
@@ -268,7 +267,7 @@ class Player: Entity, HasModel, HasCollision {
                 await opponentsCard.playAnimationAsync(animationResource2, transitionDuration: 1, startsPaused: false)
             }
         }
-
+        
         // Swap the parents of the cards
         let ownCardParent = ownCard.parent
         let opponentsCardParent = opponentsCard.parent
@@ -276,7 +275,7 @@ class Player: Entity, HasModel, HasCollision {
         opponentsCardParent?.removeChild(opponentsCard, preservingWorldTransform: true)
         ownCardParent?.addChild(opponentsCard, preservingWorldTransform: true)
         opponentsCardParent?.addChild(ownCard, preservingWorldTransform: true)
-
+        
         await discardDrawnCard(to: discardPile)
     }
     
