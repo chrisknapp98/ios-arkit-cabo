@@ -182,7 +182,9 @@ class ViewController: UIViewController {
             if case let .discardCards(playerId) = state, let player = players.first(where:{ $0.identity == playerId}),
                let modelEntity, let discardPile {
                 Task {
-                    await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                    if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                        await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                    }
                 }
             }
             return
