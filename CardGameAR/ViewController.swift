@@ -242,7 +242,6 @@ class ViewController: UIViewController {
                     Task {
                         await parentEntity.moveCardToPlayerWithOffset(player: player)
                         updateGameState(.inGame(.waitForInteractionTypeSelection(playerid)))
-//                        updateGameState(.inGame(.discardCards(playerid))) // TODO: change to action card
                     }
                 }
             }

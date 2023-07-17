@@ -110,9 +110,6 @@ struct CallToActionView: View {
                 callToAction =  "Player \(playerId), select matching covered cards\nand discard by tapping the drawn card"
                 break
             }
-        case .interactWithDrawnCard(let playerId, interactionType: let interactionType):
-//            callToAction = "Player \(playerId), select matching covered cards\nand discard by tapping the drawn card"
-            break
         }
     }
 }

@@ -20,7 +20,6 @@ enum GameState: Equatable {
         case currentTurn(_ playerId: Int)
         case waitForInteractionTypeSelection(_ playerId: Int)
         case selectedInteractionType(_ playerId: Int, _ interactionType: CardInteraction)
-        case interactWithDrawnCard(_ playerId: Int, interactionType: CardInteraction)
     }
     
     case preGame(_ state: PreGameState)
