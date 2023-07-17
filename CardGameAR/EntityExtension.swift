@@ -19,7 +19,7 @@ extension Entity {
     }
     
     func playAnimationAsync(_ animationResource: AnimationResource, transitionDuration: TimeInterval, startsPaused: Bool) async {
-        playAnimation(animationResource, transitionDuration: transitionDuration, startsPaused: startsPaused)
+        playAnimation(animationResource, transitionDuration: 0.1, startsPaused: startsPaused)
         try? await Task.sleep(nanoseconds: UInt64((transitionDuration + 0.01) * 1_000_000_000))
     }
     
@@ -45,7 +45,7 @@ extension Entity {
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
                 rotation: targetTransformRotation * combineAlignment,
-                translation: player.position(relativeTo: self)
+                translation: player.position(relativeTo: self) + SIMD3<Float>(0, Player.avatarHeight, 0)
             ),
             bindTarget: .transform
         )
@@ -54,6 +54,7 @@ extension Entity {
         await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
         removeChild(playingCard, preservingWorldTransform: true)
         player.addChild(playingCard, preservingWorldTransform: true)
+        player.setDrawnCard(playingCard)
     }
     
 }

@@ -11,10 +11,13 @@ import Combine
 
 struct CallToActionView: View {
     @State private var callToAction: String = ""
+    @State private var currentGameState: GameState?
     private let gameStatePublisher: AnyPublisher<GameState, Never>
+    private let updateGameStateAction: (GameState) -> Void
     
-    init(gameState: AnyPublisher<GameState, Never>) {
+    init(gameState: AnyPublisher<GameState, Never>, updateGameStateAction: @escaping (GameState) -> Void) {
         self.gameStatePublisher = gameState
+        self.updateGameStateAction = updateGameStateAction
     }
     
     var body: some View {
@@ -24,12 +27,38 @@ struct CallToActionView: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .padding()
-                .onReceive(gameStatePublisher) { gameState in
-                    handleGameStateChange(gameState)
-                }
             Spacer()
+            if case let .inGame(state) = currentGameState {
+                if case .waitForInteractionTypeSelection(let playerId) = state {
+                    VStack {
+                        buttonForInteractionType(playerId: playerId, .discard)
+                        HStack {
+                            buttonForInteractionType(playerId: playerId, .swapDrawnWithOwnCard)
+                            buttonForInteractionType(playerId: playerId, .performAction)
+                        }
+                    }
+                    .padding()
+                    .frame(height: 200)
+                }
+            }
+        }
+        .onReceive(gameStatePublisher) { gameState in
+            currentGameState = gameState
+            handleGameStateChange(gameState)
         }
     }
+    
+    func buttonForInteractionType(playerId: Int, _ interactionType: CardInteraction) -> some View {
+        Button() {
+            updateGameStateAction(.inGame(.selectedInteractionType(playerId, interactionType)))
+        } label: {
+            Text(interactionType.displayText)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
     
     private func handleGameStateChange(_ gameState: GameState) {
         switch gameState {
@@ -65,6 +94,22 @@ struct CallToActionView: View {
             break
         case .currentTurn(let playerId):
             callToAction = "Player \(playerId)'s turn!"
+            break
+        case .waitForInteractionTypeSelection(let playerId):
+            callToAction = "Player \(playerId), select an interaction"
+            break
+        case .selectedInteractionType(let playerId, let interactionType):
+            switch interactionType {
+            case .performAction:
+                callToAction = "Player \(playerId), perform an action!"
+                break
+            case .swapDrawnWithOwnCard:
+                callToAction = "Player \(playerId), select the card to swap the drawn card with"
+                break
+            case .discard:
+                callToAction =  "Player \(playerId), select matching covered cards\nand discard by tapping the drawn card"
+                break
+            }
         }
     }
 }

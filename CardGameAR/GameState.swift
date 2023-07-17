@@ -18,9 +18,28 @@ enum GameState: Equatable {
     enum InGameState: Equatable {
         case dealingCards
         case currentTurn(_ playerId: Int)
+        case waitForInteractionTypeSelection(_ playerId: Int)
+        case selectedInteractionType(_ playerId: Int, _ interactionType: CardInteraction)
     }
     
     case preGame(_ state: PreGameState)
     case inGame(_ state: InGameState)
     case postGame
+}
+
+enum CardInteraction: CaseIterable {
+    case swapDrawnWithOwnCard
+    case discard
+    case performAction
+    
+    var displayText: String {
+        switch self {
+        case .discard:
+            return "Discard one or multiple cards"
+        case .performAction:
+            return "Perform card action"
+        case .swapDrawnWithOwnCard:
+            return "Swap with covered card"
+        }
+    }
 }

@@ -92,3 +92,10 @@ extension PlayingCard {
         ].flatMap { $0 }
     }
 }
+
+extension PlayingCard {
+    func getCardValue() -> Int {
+        let numberString = String(assetName.split(separator: "_").last ?? "")
+        return Int(numberString) ?? 0
+    }
+}

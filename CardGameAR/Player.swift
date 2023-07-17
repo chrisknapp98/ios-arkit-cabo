@@ -13,11 +13,13 @@ class Player: Entity, HasModel, HasCollision {
     
     let identity: Int
     
-    let playerIconWidth: Float = 0.05
-    let playerIconHeight: Float = 0.0001
-    let playerIconDepth: Float = 0.05
+    let avatarWidth: Float = 0.05
+    static let avatarHeight: Float = 0.0001
+    let avatarDepth: Float = 0.05
     
-    var avatar: ModelEntity
+    private var avatar: ModelEntity
+    private var currentlyDrawnCard: Entity?
+    private var cardsToDiscard: [Entity] = []
     
     init(identity: Int) {
         self.identity = identity
@@ -27,9 +29,9 @@ class Player: Entity, HasModel, HasCollision {
         
         self.addChild(avatar)
         
-        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: playerIconWidth, height: playerIconHeight, depth: playerIconDepth)])
+        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: avatarWidth, height: Self.avatarHeight, depth: avatarDepth)])
         
-        let mesh: MeshResource = .generatePlane(width: playerIconWidth, depth: playerIconDepth, cornerRadius: 8)
+        let mesh: MeshResource = .generatePlane(width: avatarWidth, depth: avatarDepth, cornerRadius: 8)
         
         var material = SimpleMaterial()
         if let image = UIImage(systemName: "person.circle.fill"),
@@ -101,8 +103,137 @@ class Player: Entity, HasModel, HasCollision {
         
     }
     
+    func showAvatar() {
+        avatar.isEnabled = true
+    }
+    
     func hideAvatar() {
         avatar.isEnabled = false
     }
     
+    func setDrawnCard(_ card: Entity) {
+        currentlyDrawnCard = card
+    }
+    
+    func didDiscardDrawnCardOnCardSelection(_ card: Entity, discardPile: DiscardPile) async -> Bool {
+        if card != currentlyDrawnCard {
+            cardsToDiscard.append(card)
+            await turnCard(card)
+            return false
+        } else {
+            if allMemorizedCardsMatchDrawnCard() {
+                await discardMemorizedCards(to: discardPile)
+            } else {
+                for wronglyGuessedCard in cardsToDiscard {
+                    await turnCard(wronglyGuessedCard)
+                }
+            }
+            await discardDrawnCard(to: discardPile)
+            cardsToDiscard = []
+            return true
+        }
+    }
+    
+    private func turnCard(_ card: Entity) async {
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: card.transform.translation
+            ),
+            bindTarget: .transform
+        )
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+    }
+    
+    private func allMemorizedCardsMatchDrawnCard() -> Bool {
+        cardsToDiscard.allSatisfy { cardsToDiscard in
+            cardsToDiscard.name.getPlayingCardValue() == currentlyDrawnCard?.name.getPlayingCardValue()
+        }
+    }
+    
+    private func discardMemorizedCards(to discardPile: DiscardPile) async {
+        for card in cardsToDiscard {
+            let transform = Transform(
+                rotation: card.transform.rotation,
+                translation: discardPile.entity.position(relativeTo: self)
+            )
+            await discardCard(card, with: transform, to: discardPile)
+        }
+    }
+    
+    private func discardDrawnCard(to discardPile: DiscardPile) async {
+        guard let currentlyDrawnCard else { return }
+        let transform = Transform(
+            rotation: currentlyDrawnCard.transform.rotation,
+            translation: discardPile.entity.position(relativeTo: self)
+        )
+        await discardCard(currentlyDrawnCard, with: transform, to: discardPile)
+        self.currentlyDrawnCard = nil
+    }
+    
+    private func discardCard(_ card: Entity, with transform: Transform, to discardPile: DiscardPile) async {
+        var transform = transform
+        let numberOfCardsInPile = discardPile.numberOfCardsInPile
+        let yOffset = Float(numberOfCardsInPile) * (PlayingCard.thickness * 2)
+        transform.translation += SIMD3<Float>(0, yOffset, 0)
+        let animationDefinition1 = FromToByAnimation(to: transform, bindTarget: .transform)
+        let animationResource = try! AnimationResource.generate(with: animationDefinition1)
+        
+        await card.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
+        removeChild(card, preservingWorldTransform: true)
+        discardPile.entity.addChild(card, preservingWorldTransform: true)
+    }
+    
+    func swapDrawnCardWithOwnCoveredCard(card: Entity, discardPile: DiscardPile) async {
+        guard let currentlyDrawnCard else {
+            print("Currently no card drawn")
+            return
+        }
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: self.position
+            ),
+            bindTarget: .transform
+        )
+        let animationDefinition2 = FromToByAnimation(
+            to: Transform(
+                rotation: currentlyDrawnCard.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
+                translation: card.position(relativeTo: self)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource1 = try! AnimationResource.generate(with: animationDefinition1)
+        let animationResource2 = try! AnimationResource.generate(with: animationDefinition2)
+        
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await card.playAnimationAsync(animationResource1, transitionDuration: 1, startsPaused: false)
+            }
+            group.addTask {
+                await currentlyDrawnCard.playAnimationAsync(animationResource2, transitionDuration: 1, startsPaused: false)
+            }
+        }
+        self.currentlyDrawnCard = card
+        await discardDrawnCard(to: discardPile)
+    }
+    
+}
+
+extension String {
+    func getPlayingCardValue() -> Int {
+        let numberString = String(split(separator: "_").last ?? "")
+        if numberString == "J" {
+            return 11
+        } else if numberString == "Q" {
+            return 12
+        } else if numberString == "K" {
+            return 13
+        } else if numberString == "A" {
+            return 0
+        }
+        return Int(numberString) ?? 0
+    }
 }

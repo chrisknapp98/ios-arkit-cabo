@@ -16,10 +16,13 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
+//    private let currentGameState = CurrentValueSubject<GameState, Never>(.inGame(.selectedInteractionType(0, .discard)))
     private var drawPile: DrawPile?
     private var discardPile: DiscardPile?
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
+    private var callToActionView: UIView?
+    private var undoView: UIView?
     
     private let cardsPerPlayer: Int = 4
     
@@ -42,11 +45,38 @@ class ViewController: UIViewController {
         arView.environment.sceneUnderstanding.options.insert(.receivesLighting)
         runOcclusionConfiguration()
         addCallToActionView()
+        addUndoView()
         Task {
             await preloadAllModelEntities()
             arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
             updateGameState(.preGame(.placeDrawPile))
         }
+        subscribeToGameStateChanges()
+    }
+    
+    private func subscribeToGameStateChanges() {
+        currentGameState.sink { [weak self] gameState in
+            switch gameState {
+            case .inGame(let state):
+                switch state {
+                case .waitForInteractionTypeSelection(_):
+                    self?.callToActionView?.isUserInteractionEnabled = true
+                    self?.undoView?.isHidden = true
+                    break
+                case .selectedInteractionType(_, _):
+                    self?.callToActionView?.isUserInteractionEnabled = false
+                    self?.undoView?.isHidden = false
+                    break
+                default:
+                    self?.undoView?.isHidden = true
+                    break
+                }
+                break
+            default:
+                break
+            }
+        }
+        .store(in: &cancellables)
     }
     
     private func runOcclusionConfiguration() {
@@ -63,9 +93,15 @@ class ViewController: UIViewController {
     }
     
     private func addCallToActionView() {
-        let hostingController = UIHostingController(rootView: CallToActionView(gameState: currentGameState.eraseToAnyPublisher()))
+        let hostingController = UIHostingController(rootView: CallToActionView(
+            gameState: currentGameState.eraseToAnyPublisher(),
+            updateGameStateAction: { gameState in
+                self.updateGameState(gameState)
+            })
+        )
         hostingController.view.backgroundColor = .clear
         hostingController.view.isUserInteractionEnabled = false
+        callToActionView = hostingController.view
         arView.addSubview(hostingController.view)
         hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -76,8 +112,38 @@ class ViewController: UIViewController {
         ])
     }
     
+    private func addUndoView() {
+        let hostingController = UIHostingController(rootView: UndoView(
+            gameState: currentGameState.eraseToAnyPublisher(),
+            updateGameStateAction: { gameState in
+                self.updateGameState(gameState)
+            }
+        ))
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.isHidden = true
+        undoView = hostingController.view
+        arView.addSubview(hostingController.view)
+        hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: arView.topAnchor, constant: 130),
+            hostingController.view.leadingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -100),
+            hostingController.view.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: arView.topAnchor, constant: 180)
+        ])
+    }
+    
     @MainActor
     private func updateGameState(_ gameState: GameState) {
+        if case let .inGame(state) = currentGameState.value {
+            if case let .currentTurn(playerId) = state {
+                players.first(where: { $0.identity == playerId })?.hideAvatar()
+            }
+        }
+        if case let .inGame(state) = gameState {
+            if case let .currentTurn(playerId) = state {
+                players.first(where: { $0.identity == playerId })?.showAvatar()
+            }
+        }
         currentGameState.send(gameState)
     }
     
@@ -170,14 +236,42 @@ class ViewController: UIViewController {
         
         if case let .inGame(state) = currentGameState.value {
             let hits = arView.hitTest(location, query: .nearest, mask: .all)
-            let modelEntity = hits.first?.entity.parent as? ModelEntity
-            if  modelEntity?.name == DrawPile.identifier || modelEntity?.name == DiscardPile.identifier {
+            let modelEntity = hits.first?.entity as? ModelEntity
+            if let parentEntity = modelEntity?.parent, parentEntity.name == DrawPile.identifier || parentEntity.name == DiscardPile.identifier {
                 if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid}) {
-                    Task{
-                        await modelEntity?.moveCardToPlayerWithOffset(player: player)
+                    Task {
+                        await parentEntity.moveCardToPlayerWithOffset(player: player)
+                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid)))
                     }
                 }
             }
+            if case let .selectedInteractionType(playerId, interactionType) = state, let player = players.first(where:{ $0.identity == playerId}),
+               let modelEntity, let discardPile {
+                switch interactionType {
+                case .discard:
+                    Task {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                            let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
+                            if didEndTurn, let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
+                                updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            }
+                        }
+                    }
+                    break
+                case .swapDrawnWithOwnCard:
+                    Task {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId,
+                           let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
+                            await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
+                            updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                        }
+                    }
+                    break
+                case .performAction:
+                    break
+                }
+            }
+            return
         }
         
         let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
@@ -238,6 +332,18 @@ class ViewController: UIViewController {
             if player.identity != randomPlayerIndex {
                 player.hideAvatar()
             }
+        }
+    }
+    
+    private func nextPlayerIdentityInOrder(currentPlayerId: Int) -> Int? {
+        guard let currentPlayer = players.first(where: { $0.identity == currentPlayerId }),
+              let playersIndexInArray = players.firstIndex(of: currentPlayer)
+        else { return nil }
+        
+        if playersIndexInArray == players.count - 1 {
+            return 0
+        } else {
+            return playersIndexInArray + 1
         }
     }
     
