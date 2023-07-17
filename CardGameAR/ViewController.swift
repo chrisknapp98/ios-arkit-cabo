@@ -249,11 +249,12 @@ class ViewController: UIViewController {
             }
             if case let .selectedInteractionType(playerId, interactionType, _) = state,
                let player = players.first(where:{ $0.identity == playerId}),
-               let modelEntity, let discardPile {
+               let modelEntity, let discardPile,
+               let anyPlayer = modelEntity.parent as? Player {
                 switch interactionType {
                 case .discard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                        if anyPlayer.identity == playerId {
                             let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
                             if didEndTurn {
                                 endTurn(currentPlayerId: playerId)
@@ -263,7 +264,7 @@ class ViewController: UIViewController {
                     break
                 case .swapDrawnWithOwnCard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                        if anyPlayer.identity == playerId {
                             await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
                             endTurn(currentPlayerId: playerId)
                         }
@@ -273,8 +274,10 @@ class ViewController: UIViewController {
                     switch cardAction {
                     case .peek:
                         Task {
-                            await player.peekCard(card: modelEntity, discardPile: discardPile)
-                            endTurn(currentPlayerId: playerId)
+                            if anyPlayer.identity == playerId {
+                                await player.peekCard(card: modelEntity, discardPile: discardPile)
+                                endTurn(currentPlayerId: playerId)
+                            }
                         }
                         break
                     case .spy:
