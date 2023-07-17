@@ -59,11 +59,11 @@ class ViewController: UIViewController {
             switch gameState {
             case .inGame(let state):
                 switch state {
-                case .waitForInteractionTypeSelection(_):
+                case .waitForInteractionTypeSelection:
                     self?.callToActionView?.isUserInteractionEnabled = true
                     self?.undoView?.isHidden = true
                     break
-                case .selectedInteractionType(_, _):
+                case .selectedInteractionType:
                     self?.callToActionView?.isUserInteractionEnabled = false
                     self?.undoView?.isHidden = false
                     break
@@ -238,14 +238,17 @@ class ViewController: UIViewController {
             let hits = arView.hitTest(location, query: .nearest, mask: .all)
             let modelEntity = hits.first?.entity as? ModelEntity
             if let parentEntity = modelEntity?.parent, parentEntity.name == DrawPile.identifier || parentEntity.name == DiscardPile.identifier {
-                if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid}) {
+                if case let .currentTurn(playerid) = state,
+                   let player = players.first(where:{ $0.identity == playerid}),
+                   let cardValue = modelEntity?.name.getPlayingCardValue() {
                     Task {
                         await parentEntity.moveCardToPlayerWithOffset(player: player)
-                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid)))
+                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid, cardValue: cardValue)))
                     }
                 }
             }
-            if case let .selectedInteractionType(playerId, interactionType) = state, let player = players.first(where:{ $0.identity == playerId}),
+            if case let .selectedInteractionType(playerId, interactionType, _) = state,
+               let player = players.first(where:{ $0.identity == playerId}),
                let modelEntity, let discardPile {
                 switch interactionType {
                 case .discard:

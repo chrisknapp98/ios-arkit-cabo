@@ -29,12 +29,12 @@ struct CallToActionView: View {
                 .padding()
             Spacer()
             if case let .inGame(state) = currentGameState {
-                if case .waitForInteractionTypeSelection(let playerId) = state {
+                if case .waitForInteractionTypeSelection(let playerId, let cardValue) = state {
                     VStack {
-                        buttonForInteractionType(playerId: playerId, .discard)
+                        buttonForInteractionType(.discard, playerId: playerId, cardValue: cardValue)
                         HStack {
-                            buttonForInteractionType(playerId: playerId, .swapDrawnWithOwnCard)
-                            buttonForInteractionType(playerId: playerId, .performAction)
+                            buttonForInteractionType(.swapDrawnWithOwnCard, playerId: playerId, cardValue: cardValue)
+                            buttonForInteractionType(.performAction(.anyAction), playerId: playerId, cardValue: cardValue)
                         }
                     }
                     .padding()
@@ -48,14 +48,24 @@ struct CallToActionView: View {
         }
     }
     
-    func buttonForInteractionType(playerId: Int, _ interactionType: CardInteraction) -> some View {
-        Button() {
-            updateGameStateAction(.inGame(.selectedInteractionType(playerId, interactionType)))
+    func buttonForInteractionType(_ interactionType: CardInteraction, playerId: Int, cardValue: Int) -> some View {
+        var interactionType = interactionType
+        var isPerformActionInteractionType = false
+        let cardAction = CardAction(cardValue: cardValue)
+        if case .performAction(_) = interactionType {
+            isPerformActionInteractionType = true
+            if let cardAction {
+                interactionType = .performAction(cardAction)
+            }
+        }
+        return Button() {
+            updateGameStateAction(.inGame(.selectedInteractionType(playerId, interactionType, cardValue: cardValue)))
         } label: {
             Text(interactionType.displayText)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .disabled(isPerformActionInteractionType && cardAction == nil)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
@@ -95,13 +105,26 @@ struct CallToActionView: View {
         case .currentTurn(let playerId):
             callToAction = "Player \(playerId)'s turn!"
             break
-        case .waitForInteractionTypeSelection(let playerId):
+        case .waitForInteractionTypeSelection(let playerId, _):
             callToAction = "Player \(playerId), select an interaction"
             break
-        case .selectedInteractionType(let playerId, let interactionType):
+        case .selectedInteractionType(let playerId, let interactionType, _):
             switch interactionType {
-            case .performAction:
-                callToAction = "Player \(playerId), perform an action!"
+            case .performAction(let cardAction):
+                switch cardAction {
+                case .peek:
+                    callToAction = "Peek\nLook at one of your hidden cards"
+                    break
+                case .spy:
+                    callToAction = "Spy\nLook at one of your opponents cards"
+                    break
+                case .swap:
+                    callToAction = "Swap\nExchange one of your cards with an opponent"
+                    break
+                case .anyAction:
+                    callToAction = ""
+                    break
+                }
                 break
             case .swapDrawnWithOwnCard:
                 callToAction = "Player \(playerId), select the card to swap the drawn card with"
