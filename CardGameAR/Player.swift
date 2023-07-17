@@ -229,6 +229,42 @@ class Player: Entity, HasModel, HasCollision {
         await discardDrawnCard(to: discardPile)
     }
     
+    func swapCards(card1: Entity, card2: Entity, discardPile: DiscardPile) async {
+        let ownCard = card1.parent == self ? card1 : card2
+        let oppenentsCard = card1.parent != self ? card1 : card2
+        let isDrawnCard = ownCard == currentlyDrawnCard // TODO: conditionally rotate the card by 180°
+        guard let currentlyDrawnCard else {
+            print("Currently no card drawn")
+            return
+        }
+        let animationDefinition1 = FromToByAnimation(
+            to: Transform(
+                rotation: ownCard.transform.rotation,
+                translation: ownCard.position(relativeTo: oppenentsCard)
+            ),
+            bindTarget: .transform
+        )
+        let animationDefinition2 = FromToByAnimation(
+            to: Transform(
+                rotation: oppenentsCard.transform.rotation,
+                translation: oppenentsCard.position(relativeTo: ownCard)
+            ),
+            bindTarget: .transform
+        )
+        let animationResource1 = try! AnimationResource.generate(with: animationDefinition1)
+        let animationResource2 = try! AnimationResource.generate(with: animationDefinition2)
+
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await ownCard.playAnimationAsync(animationResource2, transitionDuration: 1, startsPaused: false)
+            }
+            group.addTask {
+                await oppenentsCard.playAnimationAsync(animationResource1, transitionDuration: 1, startsPaused: false)
+            }
+        }
+        await discardDrawnCard(to: discardPile)
+    }
+    
 }
 
 extension String {

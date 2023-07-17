@@ -118,8 +118,8 @@ struct CallToActionView: View {
                 case .spy:
                     callToAction = "Spy\nLook at one of your opponents cards"
                     break
-                case .swap:
-                    callToAction = "Swap\nExchange one of your cards with an opponent"
+                case .swap(let memorizedCard):
+                    callToAction = "Swap\nExchange one of your cards with an opponent (\(memorizedCard != nil ? 1 : 0)/2)"
                     break
                 case .anyAction:
                     callToAction = ""

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import class RealityKit.Entity
 
 enum GameState: Equatable {
     
@@ -44,10 +45,10 @@ enum CardInteraction: Equatable {
     }
 }
 
-enum CardAction {
+enum CardAction: Equatable {
     case peek
     case spy
-    case swap
+    case swap(memorizedCard: Entity?)
     case anyAction // for setting state from UI
     
     init?(cardValue: Int) {
@@ -57,7 +58,7 @@ enum CardAction {
         case 9, 10:
             self = .spy
         case 11, 12:
-            self = .swap
+            self = .swap(memorizedCard: nil)
         default:
             return nil
         }

@@ -288,7 +288,17 @@ class ViewController: UIViewController {
                             }
                         }
                         break
-                    case .swap:
+                    case .swap(let memorizedCard):
+                        Task {
+                            if let memorizedCard {
+                                if memorizedCard.parent != modelEntity.parent {
+                                    await player.swapCards(card1: modelEntity, card2: memorizedCard, discardPile: discardPile)
+                                }
+                            } else {
+                                let cardValue = modelEntity.name.getPlayingCardValue()
+                                updateGameState(.inGame(.selectedInteractionType(playerId, .performAction(.swap(memorizedCard: modelEntity)), cardValue: cardValue)))
+                            }
+                        }
                         break
                     case .anyAction:
                         break
