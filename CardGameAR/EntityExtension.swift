@@ -45,7 +45,7 @@ extension Entity {
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
                 rotation: targetTransformRotation * combineAlignment,
-                translation: player.position(relativeTo: self)
+                translation: player.position(relativeTo: self) + SIMD3<Float>(0, Player.avatarHeight, 0)
             ),
             bindTarget: .transform
         )

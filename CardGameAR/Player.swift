@@ -13,9 +13,9 @@ class Player: Entity, HasModel, HasCollision {
     
     let identity: Int
     
-    let playerIconWidth: Float = 0.05
-    let playerIconHeight: Float = 0.0001
-    let playerIconDepth: Float = 0.05
+    let avatarWidth: Float = 0.05
+    static let avatarHeight: Float = 0.0001
+    let avatarDepth: Float = 0.05
     
     private var avatar: ModelEntity
     private var currentlyDrawnCard: Entity?
@@ -29,9 +29,9 @@ class Player: Entity, HasModel, HasCollision {
         
         self.addChild(avatar)
         
-        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: playerIconWidth, height: playerIconHeight, depth: playerIconDepth)])
+        self.components[CollisionComponent.self] = CollisionComponent(shapes: [.generateBox(width: avatarWidth, height: Self.avatarHeight, depth: avatarDepth)])
         
-        let mesh: MeshResource = .generatePlane(width: playerIconWidth, depth: playerIconDepth, cornerRadius: 8)
+        let mesh: MeshResource = .generatePlane(width: avatarWidth, depth: avatarDepth, cornerRadius: 8)
         
         var material = SimpleMaterial()
         if let image = UIImage(systemName: "person.circle.fill"),
