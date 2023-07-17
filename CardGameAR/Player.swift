@@ -168,6 +168,10 @@ class Player: Entity, HasModel, HasCollision {
     }
     
     private func discardCard(_ card: Entity, with transform: Transform, to discardPile: DiscardPile) async {
+        var transform = transform
+        let numberOfCardsInPile = discardPile.numberOfCardsInPile
+        let yOffset = Float(numberOfCardsInPile) * (PlayingCard.thickness * 2)
+        transform.translation += SIMD3<Float>(0, yOffset, 0)
         let animationDefinition1 = FromToByAnimation(to: transform, bindTarget: .transform)
         let animationResource = try! AnimationResource.generate(with: animationDefinition1)
         
