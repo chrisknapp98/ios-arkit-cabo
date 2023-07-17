@@ -150,7 +150,7 @@ class Player: Entity, HasModel, HasCollision {
     private func discardMemorizedCards(to discardPile: DiscardPile) async {
         for card in cardsToDiscard {
             let transform = Transform(
-                rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(1, 0, 0)),
+                rotation: card.transform.rotation,
                 translation: discardPile.entity.position(relativeTo: self)
             )
             await discardCard(card, with: transform, to: discardPile)
