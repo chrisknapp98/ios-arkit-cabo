@@ -20,7 +20,7 @@ extension Entity {
     
     func playAnimationAsync(_ animationResource: AnimationResource, transitionDuration: TimeInterval, startsPaused: Bool) async {
         playAnimation(animationResource, transitionDuration: 0.1, startsPaused: startsPaused)
-        try? await Task.sleep(nanoseconds: UInt64((0.1 + 0.01) * 1_000_000_000))
+        try? await Task.sleep(nanoseconds: UInt64((transitionDuration + 0.01) * 1_000_000_000))
     }
     
     func moveCardToPlayerWithOffset(player: Player) async {
