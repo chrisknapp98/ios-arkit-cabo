@@ -120,7 +120,7 @@ class ViewController: UIViewController {
             }
         ))
         hostingController.view.backgroundColor = .clear
-        hostingController.view.isUserInteractionEnabled = true
+        hostingController.view.isHidden = true
         undoView = hostingController.view
         arView.addSubview(hostingController.view)
         hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
