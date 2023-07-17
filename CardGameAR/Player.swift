@@ -220,6 +220,15 @@ class Player: Entity, HasModel, HasCollision {
         await discardDrawnCard(to: discardPile)
     }
     
+    // MARK: - Card Actions
+    
+    func peekCard(card: Entity, discardPile: DiscardPile) async {
+        await turnCard(card)
+        try? await Task.sleep(for: .seconds(2))
+        await turnCard(card)
+        await discardDrawnCard(to: discardPile)
+    }
+    
 }
 
 extension String {

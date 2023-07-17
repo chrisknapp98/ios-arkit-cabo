@@ -255,22 +255,35 @@ class ViewController: UIViewController {
                     Task {
                         if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
                             let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
-                            if didEndTurn, let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
-                                updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            if didEndTurn {
+                                endTurn(currentPlayerId: playerId)
                             }
                         }
                     }
                     break
                 case .swapDrawnWithOwnCard:
                     Task {
-                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId,
-                           let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: playerId) {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
                             await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
-                            updateGameState(.inGame(.currentTurn(nextPlayerId)))
+                            endTurn(currentPlayerId: playerId)
                         }
                     }
                     break
-                case .performAction:
+                case .performAction(let cardAction):
+                    switch cardAction {
+                    case .peek:
+                        Task {
+                            await player.peekCard(card: modelEntity, discardPile: discardPile)
+                            endTurn(currentPlayerId: playerId)
+                        }
+                        break
+                    case .spy:
+                        break
+                    case .swap:
+                        break
+                    case .anyAction:
+                        break
+                    }
                     break
                 }
             }
@@ -348,6 +361,11 @@ class ViewController: UIViewController {
         } else {
             return playersIndexInArray + 1
         }
+    }
+    
+    private func endTurn(currentPlayerId: Int) {
+        guard let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: currentPlayerId) else { return }
+        updateGameState(.inGame(.currentTurn(nextPlayerId)))
     }
     
 }
