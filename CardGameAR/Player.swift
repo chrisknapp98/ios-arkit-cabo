@@ -181,6 +181,15 @@ class Player: Entity, HasModel, HasCollision {
 extension String {
     func getPlayingCardValue() -> Int {
         let numberString = String(split(separator: "_").last ?? "")
+        if numberString == "J" {
+            return 11
+        } else if numberString == "Q" {
+            return 12
+        } else if numberString == "K" {
+            return 13
+        } else if numberString == "A" {
+            return 0
+        }
         return Int(numberString) ?? 0
     }
 }
