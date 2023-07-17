@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     private var arView: ARView = ARView(frame: .zero)
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
+//    private let currentGameState = CurrentValueSubject<GameState, Never>(.inGame(.waitForInteractionTypeSelection(0)))
     private var drawPile: DrawPile?
     private var discardPile: DiscardPile?
     private var players: [Player] = []
@@ -47,6 +48,28 @@ class ViewController: UIViewController {
             arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
             updateGameState(.preGame(.placeDrawPile))
         }
+        subscribeToGameStateChanges()
+    }
+    
+    private func subscribeToGameStateChanges() {
+        currentGameState.sink { [weak self] gameState in
+            switch gameState {
+            case .inGame(let state):
+                switch state {
+                case .waitForInteractionTypeSelection(_):
+                    self?.arView.subviews.forEach { $0.isUserInteractionEnabled = true }
+                    break
+                case .selectedInteractionType(_, _):
+                    self?.arView.subviews.forEach { $0.isUserInteractionEnabled = false }
+                    break
+                default: break
+                }
+                break
+            default:
+                break
+            }
+        }
+        .store(in: &cancellables)
     }
     
     private func runOcclusionConfiguration() {
@@ -63,7 +86,12 @@ class ViewController: UIViewController {
     }
     
     private func addCallToActionView() {
-        let hostingController = UIHostingController(rootView: CallToActionView(gameState: currentGameState.eraseToAnyPublisher()))
+        let hostingController = UIHostingController(rootView: CallToActionView(
+            gameState: currentGameState.eraseToAnyPublisher(),
+            updateGameStateAction: { gameState in
+                self.updateGameState(gameState)
+            })
+        )
         hostingController.view.backgroundColor = .clear
         hostingController.view.isUserInteractionEnabled = false
         arView.addSubview(hostingController.view)
@@ -175,16 +203,25 @@ class ViewController: UIViewController {
                 if case let .currentTurn(playerid) = state, let player = players.first(where:{ $0.identity == playerid}) {
                     Task {
                         await parentEntity.moveCardToPlayerWithOffset(player: player)
-                        updateGameState(.inGame(.discardCards(playerid))) // TODO: change to action card
+                        updateGameState(.inGame(.waitForInteractionTypeSelection(playerid)))
+//                        updateGameState(.inGame(.discardCards(playerid))) // TODO: change to action card
                     }
                 }
             }
-            if case let .discardCards(playerId) = state, let player = players.first(where:{ $0.identity == playerId}),
+            if case let .selectedInteractionType(playerId, interactionType) = state, let player = players.first(where:{ $0.identity == playerId}),
                let modelEntity, let discardPile {
-                Task {
-                    if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
-                        await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                switch interactionType {
+                case .discard:
+                    Task {
+                        if let anyPlayer = modelEntity.parent as? Player, anyPlayer.identity == playerId {
+                            await player.didInteractWithCard(modelEntity, discardPile: discardPile)
+                        }
                     }
+                    break
+                case .swapDrawnWithOwnCard:
+                    break
+                case .performAction:
+                    break
                 }
             }
             return
@@ -249,6 +286,10 @@ class ViewController: UIViewController {
                 player.hideAvatar()
             }
         }
+    }
+    
+    private func handleInteractionType(_ interactionType: CardInteraction) {
+        
     }
     
 }
