@@ -227,8 +227,21 @@ class ViewController: UIViewController {
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
                         await dealCards()
-                        startGame()
+                        updateGameState(.preGame(.regardCards))
                     }
+                    return
+                }
+            }
+            if state == .regardCards {
+                let hits = arView.hitTest(location, query: .nearest, mask: .all)
+                if let cardEntity = hits.first?.entity, let player = cardEntity.parent as? Player, let discardPile {
+                    Task {
+                        await player.peekCard(card: cardEntity, discardPile: discardPile)
+                    }
+                    return
+                }
+                if let cardEntity = hits.first?.entity, cardEntity.parent?.name == DrawPile.identifier {
+                    startGame()
                     return
                 }
             }
