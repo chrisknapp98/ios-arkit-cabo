@@ -293,6 +293,7 @@ class ViewController: UIViewController {
                             if let memorizedCard {
                                 if memorizedCard.parent != modelEntity.parent {
                                     await player.swapCards(card1: modelEntity, card2: memorizedCard, discardPile: discardPile)
+                                    endTurn(currentPlayerId: playerId)
                                 }
                             } else {
                                 let cardValue = modelEntity.name.getPlayingCardValue()
@@ -355,8 +356,6 @@ class ViewController: UIViewController {
             player.look(at: drawPilePosition,
                         from: playerPosition,
                         relativeTo: nil)
-            
-            print("dealCards: after animation \(player.transform.translation)")
         }
     }
     
