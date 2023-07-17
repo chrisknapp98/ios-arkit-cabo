@@ -281,6 +281,12 @@ class ViewController: UIViewController {
                         }
                         break
                     case .spy:
+                        Task {
+                            if anyPlayer.identity != playerId {
+                                await player.peekCard(card: modelEntity, discardPile: discardPile)
+                                endTurn(currentPlayerId: playerId)
+                            }
+                        }
                         break
                     case .swap:
                         break
