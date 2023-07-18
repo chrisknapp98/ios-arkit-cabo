@@ -12,11 +12,19 @@ import Combine
 struct CallToActionView: View {
     @State private var callToAction: String = ""
     @State private var currentGameState: GameState?
+    @State private var lastRoundText: String = ""
+    @State private var wasLastRound: Bool = false
     private let gameStatePublisher: AnyPublisher<GameState, Never>
     private let updateGameStateAction: (GameState) -> Void
+    private let lastRoundCalledByPlayerIdPublisher: AnyPublisher<Int?, Never>
     
-    init(gameState: AnyPublisher<GameState, Never>, updateGameStateAction: @escaping (GameState) -> Void) {
+    init(
+        gameState: AnyPublisher<GameState, Never>,
+        lastRoundCalledByPlayerId: AnyPublisher<Int?, Never>,
+        updateGameStateAction: @escaping (GameState) -> Void
+    ) {
         self.gameStatePublisher = gameState
+        self.lastRoundCalledByPlayerIdPublisher = lastRoundCalledByPlayerId
         self.updateGameStateAction = updateGameStateAction
     }
     
@@ -27,6 +35,41 @@ struct CallToActionView: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .padding()
+                .background(
+                    GeometryReader { proxy in
+                        Rectangle()
+                            .cornerRadius(proxy.size.height/2)
+                            .foregroundColor(.black)
+                            .opacity(0.25)
+                            .blur(radius: 20, opaque: false)
+                    }
+                )
+            if !lastRoundText.isEmpty {
+                Text(lastRoundText)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.red)
+                    .padding()
+                    .background(
+                        GeometryReader { proxy in
+                            Rectangle()
+                                .cornerRadius(proxy.size.height/2)
+                                .foregroundColor(.black)
+                                .opacity(0.25)
+                                .blur(radius: 20, opaque: false)
+                        }
+                    )
+            } else if lastRoundText.isEmpty == wasLastRound {
+                Button {
+                    reset()
+                } label: {
+                    Text("Play Again")
+                        .padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding()
+            }
             Spacer()
             if case let .inGame(state) = currentGameState {
                 if case .waitForInteractionTypeSelection(let playerId, let cardValue) = state {
@@ -46,9 +89,19 @@ struct CallToActionView: View {
             currentGameState = gameState
             handleGameStateChange(gameState)
         }
+        .onReceive(lastRoundCalledByPlayerIdPublisher) { lastRoundCallerPlayerId in
+            if let lastRoundCallerPlayerId {
+                lastRoundText = "LAST ROUND\ncalled by Player \(lastRoundCallerPlayerId)"
+            } else {
+                if !lastRoundText.isEmpty {
+                    wasLastRound = true
+                }
+                lastRoundText = ""
+            }
+        }
     }
     
-    func buttonForInteractionType(_ interactionType: CardInteraction, playerId: Int, cardValue: Int) -> some View {
+    private func buttonForInteractionType(_ interactionType: CardInteraction, playerId: Int, cardValue: Int) -> some View {
         var interactionType = interactionType
         var isPerformActionInteractionType = false
         let cardAction = CardAction(cardValue: cardValue)
@@ -69,6 +122,10 @@ struct CallToActionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
+    private func reset() {
+        updateGameStateAction(.preGame(.placeDrawPile))
+        wasLastRound = false
+    }
     
     private func handleGameStateChange(_ gameState: GameState) {
         switch gameState {
@@ -78,7 +135,8 @@ struct CallToActionView: View {
         case .inGame(let state):
             handleInGameStateChange(state)
             break
-        case .postGame:
+        case .postGame(let results):
+            handlePostGameStateChange(results)
             break
         }
     }
@@ -136,5 +194,18 @@ struct CallToActionView: View {
                 break
             }
         }
+    }
+    
+    private func handlePostGameStateChange(_ results: [PointsPerPlayer]) {
+        let sortedResults = results.sorted { playerResultA, playerResultB in
+            playerResultA.points < playerResultB.points
+        }
+        let winningPlayerId = sortedResults.first?.playerId.description ?? ""
+        let gameOverString = "Game Over, Player \(winningPlayerId) won!"
+        callToAction = sortedResults.enumerated().reduce("\(gameOverString)\n\nResults:", { (partialString, enumeratedPointsPerPlayer) in
+            let index = enumeratedPointsPerPlayer.offset
+            let pointsPerPlayer = enumeratedPointsPerPlayer.element
+            return partialString + "\n\(index + 1). Player \(pointsPerPlayer.playerId) - \(pointsPerPlayer.points) points"
+        })
     }
 }
