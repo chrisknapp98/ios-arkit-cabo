@@ -195,7 +195,7 @@ class ViewController: UIViewController {
     }
     
     private func preloadAllModelEntities() async {
-        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCards()
+        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCardsShuffled()
             .reduceAsync([PlayingCard: ModelEntity]()) { partialResult, card in
                 var partialResult = partialResult
                 guard let modelEntity: ModelEntity = try? await loadModelAsync(named: card.assetName) else {
@@ -271,7 +271,7 @@ class ViewController: UIViewController {
                     playerEntity.removeFromParent()
                     players.remove(at: playerIndex)
                     return
-                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
+                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains(PlayingCard.prefix) {
                     Task {
                         await dealCards()
                         updateGameState(.preGame(.regardCards))
@@ -504,7 +504,7 @@ extension ViewController: ARSessionDelegate {
             // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
                 Task {
-                    await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
+                    await placeDrawPile(cards: PlayingCard.allBlueCardsShuffled(), for: anchor)
                     updateGameState(.preGame(.setPlayerPositions))
                 }
             } else if let anchorName = anchor.name, anchorName == DiscardPile.identifier {

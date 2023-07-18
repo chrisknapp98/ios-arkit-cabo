@@ -83,13 +83,14 @@ extension PlayingCard {
         }
     }
     
-    static func allBlueCards() -> [PlayingCard] {
+    static func allBlueCardsShuffled() -> [PlayingCard] {
         [
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .clubs(value: $0)) },
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .diamonds(value: $0)) },
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .hearts(value: $0)) },
             PlayingCard.CardValue.allCases.map { PlayingCard.blue(type: .spades(value: $0)) }
-        ].flatMap { $0 }
+        ]
+            .flatMap { $0 }
             .shuffled()
     }
 }
