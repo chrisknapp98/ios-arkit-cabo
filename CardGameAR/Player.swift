@@ -104,7 +104,7 @@ class Player: Entity, HasModel, HasCollision {
             let animationDefinition1 = FromToByAnimation(
                 to: Transform(
                     rotation: alignedCardRotation,
-                    translation: player.transform.translation + offsetPosition + gridOffset
+                    translation: card.position(relativeTo: player) + offsetPosition + gridOffset
                 ),
                 bindTarget: .transform
             )
