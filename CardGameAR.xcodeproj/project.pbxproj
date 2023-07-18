@@ -16,6 +16,7 @@
 		F32686E22A604528008760B0 /* EntityExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E12A604528008760B0 /* EntityExtension.swift */; };
 		F32686E42A632EA8008760B0 /* DiscardPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E32A632EA8008760B0 /* DiscardPile.swift */; };
 		F32686E62A656254008760B0 /* UndoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E52A656254008760B0 /* UndoView.swift */; };
+		F32686E82A66D800008760B0 /* LastRoundCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32686E72A66D800008760B0 /* LastRoundCallView.swift */; };
 		F32AF1C92A30B8E4005F95FA /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */; };
 		F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E72A431FD100117BF2 /* DrawPile.swift */; };
 		F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35040E92A43952600117BF2 /* CardGameError.swift */; };
@@ -95,6 +96,7 @@
 		F32686E12A604528008760B0 /* EntityExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityExtension.swift; sourceTree = "<group>"; };
 		F32686E32A632EA8008760B0 /* DiscardPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscardPile.swift; sourceTree = "<group>"; };
 		F32686E52A656254008760B0 /* UndoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoView.swift; sourceTree = "<group>"; };
+		F32686E72A66D800008760B0 /* LastRoundCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastRoundCallView.swift; sourceTree = "<group>"; };
 		F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		F35040E72A431FD100117BF2 /* DrawPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawPile.swift; sourceTree = "<group>"; };
 		F35040E92A43952600117BF2 /* CardGameError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGameError.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				F35040E72A431FD100117BF2 /* DrawPile.swift */,
 				F32686E12A604528008760B0 /* EntityExtension.swift */,
 				F3D399C52A4796FE009B6A77 /* GameState.swift */,
+				F32686E72A66D800008760B0 /* LastRoundCallView.swift */,
 				F3D399C92A48D468009B6A77 /* Player.swift */,
 				F35A49822A0BCA8600635215 /* PlayingCard.swift */,
 				F32AF1C82A30B8E4005F95FA /* SequenceExtension.swift */,
@@ -505,6 +508,7 @@
 				F35040EA2A43952600117BF2 /* CardGameError.swift in Sources */,
 				F3D399C62A4796FE009B6A77 /* GameState.swift in Sources */,
 				F3020EE429F5927F0011F0CB /* Experience.rcproject in Sources */,
+				F32686E82A66D800008760B0 /* LastRoundCallView.swift in Sources */,
 				F32686E22A604528008760B0 /* EntityExtension.swift in Sources */,
 				F3D399CA2A48D468009B6A77 /* Player.swift in Sources */,
 				F35040E82A431FD100117BF2 /* DrawPile.swift in Sources */,

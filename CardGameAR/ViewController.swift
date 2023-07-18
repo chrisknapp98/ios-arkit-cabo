@@ -17,12 +17,14 @@ class ViewController: UIViewController {
     private var playingCardModels: [PlayingCard: ModelEntity] = [:]
     private let currentGameState = CurrentValueSubject<GameState, Never>(.preGame(.loadingAssets))
 //    private let currentGameState = CurrentValueSubject<GameState, Never>(.inGame(.selectedInteractionType(0, .discard)))
+    private let lastRoundCalledByPlayerId = CurrentValueSubject<Int?, Never>(nil)
     private var drawPile: DrawPile?
     private var discardPile: DiscardPile?
     private var players: [Player] = []
     private var cancellables = Set<AnyCancellable>()
     private var callToActionView: UIView?
     private var undoView: UIView?
+    private var lastRoundCallView: UIView?
     
     private let cardsPerPlayer: Int = 4
     
@@ -46,6 +48,7 @@ class ViewController: UIViewController {
         runOcclusionConfiguration()
         addCallToActionView()
         addUndoView()
+        addLastRoundCallView()
         Task {
             await preloadAllModelEntities()
             arView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:))))
@@ -61,22 +64,28 @@ class ViewController: UIViewController {
                 switch state {
                 case .waitForInteractionTypeSelection:
                     self?.callToActionView?.isUserInteractionEnabled = true
-                    self?.undoView?.isHidden = true
+                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                     break
                 case .selectedInteractionType:
                     self?.callToActionView?.isUserInteractionEnabled = false
-                    self?.undoView?.isHidden = false
+                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: false)
                     break
                 default:
-                    self?.undoView?.isHidden = true
+                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                     break
                 }
                 break
             default:
+                self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                 break
             }
         }
         .store(in: &cancellables)
+    }
+    
+    private func toggleUndoViewAndLastRoundCallViewVisibility(isHidden: Bool) {
+        self.undoView?.isHidden = isHidden
+        self.lastRoundCallView?.isHidden = isHidden
     }
     
     private func runOcclusionConfiguration() {
@@ -95,6 +104,7 @@ class ViewController: UIViewController {
     private func addCallToActionView() {
         let hostingController = UIHostingController(rootView: CallToActionView(
             gameState: currentGameState.eraseToAnyPublisher(),
+            lastRoundCalledByPlayerId: lastRoundCalledByPlayerId.eraseToAnyPublisher(),
             updateGameStateAction: { gameState in
                 self.updateGameState(gameState)
             })
@@ -132,6 +142,26 @@ class ViewController: UIViewController {
         ])
     }
     
+    private func addLastRoundCallView() {
+        let hostingController = UIHostingController(rootView: LastRoundCallView(
+            gameState: currentGameState.eraseToAnyPublisher(),
+            callLastRoundAction: { playerId in
+                self.updateLastRoundCalledByPlayerId(playerId)
+            }
+        ))
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.isHidden = true
+        lastRoundCallView = hostingController.view
+        arView.addSubview(hostingController.view)
+        hostingController.view?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: arView.topAnchor, constant: 130),
+            hostingController.view.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 100),
+            hostingController.view.bottomAnchor.constraint(equalTo: arView.topAnchor, constant: 180)
+        ])
+    }
+    
     @MainActor
     private func updateGameState(_ gameState: GameState) {
         if case let .inGame(state) = currentGameState.value {
@@ -145,6 +175,11 @@ class ViewController: UIViewController {
             }
         }
         currentGameState.send(gameState)
+    }
+    
+    @MainActor
+    private func updateLastRoundCalledByPlayerId(_ playerId: Int) {
+        lastRoundCalledByPlayerId.send(playerId)
     }
     
     private func preloadAllModelEntities() async {
@@ -220,9 +255,9 @@ class ViewController: UIViewController {
         if case let .preGame(state) = currentGameState.value {
             if state == .setPlayerPositions {
                 let hits = arView.hitTest(location, query: .nearest, mask: .all)
-                if let playerEntity = hits.first?.entity.parent as? Player {
+                if let playerEntity = hits.first?.entity.parent as? Player, let playerIndex = players.firstIndex(of: playerEntity) {
                     playerEntity.removeFromParent()
-                    players.remove(at: playerEntity.identity)
+                    players.remove(at: playerIndex)
                     return
                 } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
                     Task {
@@ -374,9 +409,10 @@ class ViewController: UIViewController {
     
     private func startGame() {
         let randomPlayerIndex = Int.random(in: 0..<players.count)
-        updateGameState(.inGame(.currentTurn(randomPlayerIndex)))
+        let randomPlayer = players[randomPlayerIndex]
+        updateGameState(.inGame(.currentTurn(randomPlayer.identity)))
         for player in players {
-            if player.identity != randomPlayerIndex {
+            if player.identity != randomPlayer.identity {
                 player.hideAvatar()
             }
         }
@@ -388,9 +424,9 @@ class ViewController: UIViewController {
         else { return nil }
         
         if playersIndexInArray == players.count - 1 {
-            return 0
+            return players[0].identity
         } else {
-            return playersIndexInArray + 1
+            return players[playersIndexInArray + 1].identity
         }
     }
     
@@ -452,7 +488,8 @@ extension ViewController: ARSessionDelegate {
     }
     
     private func setPlayerPosition(for anchor: ARAnchor) {
-        let entity = Player(identity: players.count)
+        let lastPlayersIdentity = players.last?.identity ?? 0
+        let entity = Player(identity: lastPlayersIdentity + 1)
         arView.installGestures([.translation], for: entity)
         let anchorEntity = AnchorEntity(anchor: anchor)
         anchorEntity.addChild(entity)

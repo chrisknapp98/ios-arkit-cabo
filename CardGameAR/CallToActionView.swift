@@ -12,11 +12,18 @@ import Combine
 struct CallToActionView: View {
     @State private var callToAction: String = ""
     @State private var currentGameState: GameState?
+    @State private var lastRoundText: String = ""
     private let gameStatePublisher: AnyPublisher<GameState, Never>
     private let updateGameStateAction: (GameState) -> Void
+    private let lastRoundCalledByPlayerIdPublisher: AnyPublisher<Int?, Never>
     
-    init(gameState: AnyPublisher<GameState, Never>, updateGameStateAction: @escaping (GameState) -> Void) {
+    init(
+        gameState: AnyPublisher<GameState, Never>,
+        lastRoundCalledByPlayerId: AnyPublisher<Int?, Never>,
+        updateGameStateAction: @escaping (GameState) -> Void
+    ) {
         self.gameStatePublisher = gameState
+        self.lastRoundCalledByPlayerIdPublisher = lastRoundCalledByPlayerId
         self.updateGameStateAction = updateGameStateAction
     }
     
@@ -27,6 +34,32 @@ struct CallToActionView: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .padding()
+                .background(
+                    GeometryReader { proxy in
+                        Rectangle()
+                            .cornerRadius(proxy.size.height/2)
+                            .foregroundColor(.black)
+                            .opacity(0.25)
+                            .blur(radius: 20, opaque: false)
+                    }
+                )
+            if !lastRoundText.isEmpty {
+                Text(lastRoundText)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.red)
+                    .padding()
+                    .background(
+                        GeometryReader { proxy in
+                            Rectangle()
+                                .cornerRadius(proxy.size.height/2)
+                                .foregroundColor(.black)
+                                .opacity(0.25)
+                                .blur(radius: 20, opaque: false)
+                        }
+                    )
+            }
             Spacer()
             if case let .inGame(state) = currentGameState {
                 if case .waitForInteractionTypeSelection(let playerId, let cardValue) = state {
@@ -45,6 +78,11 @@ struct CallToActionView: View {
         .onReceive(gameStatePublisher) { gameState in
             currentGameState = gameState
             handleGameStateChange(gameState)
+        }
+        .onReceive(lastRoundCalledByPlayerIdPublisher) { lastRoundCallerPlayerId in
+            if let lastRoundCallerPlayerId {
+                lastRoundText = "LAST ROUND\ncalled by Player \(lastRoundCallerPlayerId)"
+            }
         }
     }
     
