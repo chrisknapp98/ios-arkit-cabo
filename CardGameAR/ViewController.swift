@@ -404,7 +404,7 @@ class ViewController: UIViewController {
         }
         for player in players {
             rotatePlayerFacingTowardsDrawPile(player)
-            await player.arrangeCardsInGridForPlayer(player: player)
+            await player.arrangeDealtCardsInGrid()
         }
     }
     
@@ -413,9 +413,7 @@ class ViewController: UIViewController {
             let playerPosition = player.position(relativeTo: nil)
             let drawPilePosition = drawPile.entity.position(relativeTo: nil)
             
-            player.look(at: drawPilePosition,
-                        from: playerPosition,
-                        relativeTo: nil)
+            player.look(at: drawPilePosition, from: playerPosition, relativeTo: nil)
         }
     }
     
