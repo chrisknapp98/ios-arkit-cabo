@@ -515,7 +515,7 @@ extension ViewController: ARSessionDelegate {
     private func setPlayerPosition(for anchor: ARAnchor) {
         let lastPlayersIdentity = players.last?.identity ?? 0
         let entity = Player(identity: lastPlayersIdentity + 1)
-        arView.installGestures([.translation], for: entity)
+        arView.installGestures([.translation, .rotation], for: entity)
         let anchorEntity = AnchorEntity(anchor: anchor)
         anchorEntity.addChild(entity)
         arView.scene.addAnchor(anchorEntity)
