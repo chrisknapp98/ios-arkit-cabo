@@ -195,7 +195,7 @@ class ViewController: UIViewController {
     }
     
     private func preloadAllModelEntities() async {
-        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCards()
+        let loadedModels: [PlayingCard: ModelEntity]? = try? await PlayingCard.allBlueCardsShuffled()
             .reduceAsync([PlayingCard: ModelEntity]()) { partialResult, card in
                 var partialResult = partialResult
                 guard let modelEntity: ModelEntity = try? await loadModelAsync(named: card.assetName) else {
@@ -263,7 +263,6 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: arView)
-        // TODO: switch case
         if case let .preGame(state) = currentGameState.value {
             if state == .setPlayerPositions {
                 let hits = arView.hitTest(location, query: .nearest, mask: .all)
@@ -271,7 +270,7 @@ class ViewController: UIViewController {
                     playerEntity.removeFromParent()
                     players.remove(at: playerIndex)
                     return
-                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains("Playing_Card") {
+                } else if let cardEntity = hits.first?.entity, cardEntity.name.contains(PlayingCard.prefix) {
                     Task {
                         await dealCards()
                         updateGameState(.preGame(.regardCards))
@@ -395,16 +394,19 @@ class ViewController: UIViewController {
         }
     }
     
-    
     private func dealCards() async {
         updateGameState(.inGame(.dealingCards))
         await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
         if let discardPile {
             await drawPile?.moveLastCardToDiscardPile(discardPile)
         }
-        for player in players {
-            rotatePlayerFacingTowardsDrawPile(player)
-            await player.arrangeCardsInGridForPlayer(player: player)
+        await withTaskGroup(of: Void.self) { group in
+            for player in players {
+                group.addTask {
+                    await self.rotatePlayerFacingTowardsDrawPile(player)
+                    await player.arrangeDealtCardsInGrid()
+                }
+            }
         }
     }
     
@@ -413,9 +415,7 @@ class ViewController: UIViewController {
             let playerPosition = player.position(relativeTo: nil)
             let drawPilePosition = drawPile.entity.position(relativeTo: nil)
             
-            player.look(at: drawPilePosition,
-                        from: playerPosition,
-                        relativeTo: nil)
+            player.look(at: drawPilePosition, from: playerPosition, relativeTo: nil)
         }
     }
     
@@ -454,7 +454,8 @@ class ViewController: UIViewController {
         else { return false }
         let indexOfPlayerBeforeLastRoudnCaller = indexOfLastRoundCaller == players.count - 1 ? 0 : indexOfLastRoundCaller + 1
         let playerBeforeLastRoundCaller = players[indexOfPlayerBeforeLastRoudnCaller]
-        if !currentPlayer.hasCards || currentPlayer == playerBeforeLastRoundCaller {
+        
+        if !currentPlayer.hasCards || currentPlayer == playerBeforeLastRoundCaller || drawPile?.entity.children.isEmpty ?? false {
             let pointsPerPlayer = players.map { player in
                 PointsPerPlayer(playerId: player.identity, points: player.points)
             }
@@ -500,10 +501,9 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
                 Task {
-                    await placeDrawPile(cards: PlayingCard.allBlueCards(), for: anchor)
+                    await placeDrawPile(cards: PlayingCard.allBlueCardsShuffled(), for: anchor)
                     updateGameState(.preGame(.setPlayerPositions))
                 }
             } else if let anchorName = anchor.name, anchorName == DiscardPile.identifier {
@@ -517,7 +517,7 @@ extension ViewController: ARSessionDelegate {
     private func setPlayerPosition(for anchor: ARAnchor) {
         let lastPlayersIdentity = players.last?.identity ?? 0
         let entity = Player(identity: lastPlayersIdentity + 1)
-        arView.installGestures([.translation], for: entity)
+        arView.installGestures([.translation, .rotation], for: entity)
         let anchorEntity = AnchorEntity(anchor: anchor)
         anchorEntity.addChild(entity)
         arView.scene.addAnchor(anchorEntity)

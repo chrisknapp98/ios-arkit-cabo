@@ -68,8 +68,8 @@ class Player: Entity, HasModel, HasCollision {
     }
     
     @MainActor
-    func arrangeCardsInGridForPlayer(player: Player) async {
-        let cards = Array(player.children).filter { $0.name.contains(PlayingCard.prefix) }
+    func arrangeDealtCardsInGrid() async {
+        let cards = Array(self.children).filter { $0.name.contains(PlayingCard.prefix) }
         let gridWidth = 2
         let gridHeight = cards.count / gridWidth
         let cardSpacingW: Float = 0.07  // adjust this to set the spacing between the cards
@@ -91,7 +91,7 @@ class Player: Entity, HasModel, HasCollision {
             let xAxisAlignment = simd_quatf(angle: Float.pi, axis: SIMD3(x: 1, y: 0, z: 0))
             
             // Get the player's rotation matrix and extract the y-axis vector
-            let playerRotationMatrix = simd_float3x3(player.transform.rotation)
+            let playerRotationMatrix = simd_float3x3(self.transform.rotation)
             let playerYAxisDirection = playerRotationMatrix.columns.1
             
             // Create a quaternion for the player's y-axis direction
@@ -104,7 +104,7 @@ class Player: Entity, HasModel, HasCollision {
             let animationDefinition1 = FromToByAnimation(
                 to: Transform(
                     rotation: alignedCardRotation,
-                    translation: player.transform.translation + offsetPosition + gridOffset
+                    translation: card.position(relativeTo: self) + offsetPosition + gridOffset
                 ),
                 bindTarget: .transform
             )
@@ -206,7 +206,7 @@ class Player: Entity, HasModel, HasCollision {
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
                 rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
-                translation: self.position
+                translation: currentlyDrawnCard.position(relativeTo: self)
             ),
             bindTarget: .transform
         )
