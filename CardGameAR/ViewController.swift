@@ -263,7 +263,6 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: arView)
-        // TODO: switch case
         if case let .preGame(state) = currentGameState.value {
             if state == .setPlayerPositions {
                 let hits = arView.hitTest(location, query: .nearest, mask: .all)
@@ -501,7 +500,6 @@ extension ARView: ARCoachingOverlayViewDelegate {
 extension ViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
-            // TODO: introduce some sort of game state to match the expected anchorName
             if let anchorName = anchor.name, anchorName == DrawPile.identifier {
                 Task {
                     await placeDrawPile(cards: PlayingCard.allBlueCardsShuffled(), for: anchor)
