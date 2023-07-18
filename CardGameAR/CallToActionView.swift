@@ -34,6 +34,7 @@ struct CallToActionView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
+                .foregroundColor(.white)
                 .padding()
                 .background(
                     GeometryReader { proxy in
