@@ -26,9 +26,7 @@ extension Entity {
     func moveCardToPlayerWithOffset(player: Player) async {
         guard let card = children.reversed().first else { return }
         
-        let playersGlobalTransform = player.transformMatrix(relativeTo: nil)
-        let playerInOwnCoordinates = self.transformMatrix(relativeTo: nil).inverse * playersGlobalTransform
-        var targetTransform = Transform(matrix: playerInOwnCoordinates)
+        var targetTransform = self.convert(transform: transform, from : player)
         targetTransform.translation += SIMD3<Float>(0, Player.avatarHeight, 0)
         
         let animationDefinition1 = FromToByAnimation(
@@ -44,5 +42,6 @@ extension Entity {
         player.addChild(card, preservingWorldTransform: true)
         player.setDrawnCard(card)
     }
-    
 }
+
+
