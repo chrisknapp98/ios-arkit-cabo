@@ -270,7 +270,7 @@ class ViewController: UIViewController {
                         if anyPlayer.identity == playerId {
                             let didEndTurn = await player.didDiscardDrawnCardOnCardSelection(modelEntity, discardPile: discardPile)
                             if didEndTurn {
-                                endTurn(currentPlayerId: playerId)
+                                endTurn(currentPlayer: player)
                             }
                         }
                     }
@@ -279,7 +279,7 @@ class ViewController: UIViewController {
                     Task {
                         if anyPlayer.identity == playerId {
                             await player.swapDrawnCardWithOwnCoveredCard(card: modelEntity, discardPile: discardPile)
-                            endTurn(currentPlayerId: playerId)
+                            endTurn(currentPlayer: player)
                         }
                     }
                     break
@@ -289,7 +289,7 @@ class ViewController: UIViewController {
                         Task {
                             if anyPlayer.identity == playerId {
                                 await player.peekCard(card: modelEntity, discardPile: discardPile)
-                                endTurn(currentPlayerId: playerId)
+                                endTurn(currentPlayer: player)
                             }
                         }
                         break
@@ -297,7 +297,7 @@ class ViewController: UIViewController {
                         Task {
                             if anyPlayer.identity != playerId {
                                 await player.peekCard(card: modelEntity, discardPile: discardPile)
-                                endTurn(currentPlayerId: playerId)
+                                endTurn(currentPlayer: player)
                             }
                         }
                         break
@@ -306,7 +306,7 @@ class ViewController: UIViewController {
                             if let memorizedCard {
                                 if memorizedCard.parent != modelEntity.parent {
                                     await player.swapCards(card1: modelEntity, card2: memorizedCard, discardPile: discardPile)
-                                    endTurn(currentPlayerId: playerId)
+                                    endTurn(currentPlayer: player)
                                 }
                             } else {
                                 let cardValue = modelEntity.name.getPlayingCardValue()
@@ -394,9 +394,21 @@ class ViewController: UIViewController {
         }
     }
     
-    private func endTurn(currentPlayerId: Int) {
-        guard let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: currentPlayerId) else { return }
+    private func endTurn(currentPlayer: Player) {
+        if didEndGame(currentPlayer: currentPlayer) { return }
+        guard let nextPlayerId = nextPlayerIdentityInOrder(currentPlayerId: currentPlayer.identity) else { return }
         updateGameState(.inGame(.currentTurn(nextPlayerId)))
+    }
+    
+    private func didEndGame(currentPlayer: Player) -> Bool {
+        if !currentPlayer.hasCards {
+            let pointsPerPlayer = players.map { player in
+                PointsPerPlayer(playerId: player.identity, points: player.points)
+            }
+            updateGameState(.postGame(pointsPerPlayer))
+            return true
+        }
+        return false
     }
     
 }

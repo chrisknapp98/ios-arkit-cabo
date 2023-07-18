@@ -21,6 +21,16 @@ class Player: Entity, HasModel, HasCollision {
     private var currentlyDrawnCard: Entity?
     private var cardsToDiscard: [Entity] = []
     
+    var hasCards: Bool {
+        !children.filter { $0.name.contains(PlayingCard.prefix) }.isEmpty
+    }
+    
+    var points: Int {
+        children.filter { $0.name.contains(PlayingCard.prefix) }.reduce(0, { (currentSum, playingCardEntity) in
+            currentSum + playingCardEntity.name.getPlayingCardValue()
+        })
+    }
+    
     init(identity: Int) {
         self.identity = identity
         // Create a separate entity for the avatar

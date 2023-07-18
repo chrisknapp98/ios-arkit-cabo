@@ -78,7 +78,8 @@ struct CallToActionView: View {
         case .inGame(let state):
             handleInGameStateChange(state)
             break
-        case .postGame:
+        case .postGame(let results):
+            handlePostGameStateChange(results)
             break
         }
     }
@@ -136,5 +137,18 @@ struct CallToActionView: View {
                 break
             }
         }
+    }
+    
+    private func handlePostGameStateChange(_ results: [PointsPerPlayer]) {
+        let sortedResults = results.sorted { playerResultA, playerResultB in
+            playerResultA.points < playerResultB.points
+        }
+        let winningPlayerId = sortedResults.first?.playerId.description ?? ""
+        let gameOverString = "Game Over, Player \(winningPlayerId) won!"
+        callToAction = sortedResults.enumerated().reduce("\(gameOverString)\n\nResults:", { (partialString, enumeratedPointsPerPlayer) in
+            let index = enumeratedPointsPerPlayer.offset
+            let pointsPerPlayer = enumeratedPointsPerPlayer.element
+            return partialString + "\n\(index + 1). Player \(pointsPerPlayer.playerId) - \(pointsPerPlayer.points) points"
+        })
     }
 }

@@ -26,7 +26,7 @@ enum GameState: Equatable {
     
     case preGame(_ state: PreGameState)
     case inGame(_ state: InGameState)
-    case postGame
+    case postGame(_ results: [PointsPerPlayer])
 }
 
 enum CardInteraction: Equatable {
@@ -77,4 +77,9 @@ enum CardAction: Equatable {
             return []
         }
     }
+}
+
+struct PointsPerPlayer: Equatable {
+    let playerId: Int
+    let points: Int
 }
