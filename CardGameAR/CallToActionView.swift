@@ -82,6 +82,8 @@ struct CallToActionView: View {
         .onReceive(lastRoundCalledByPlayerIdPublisher) { lastRoundCallerPlayerId in
             if let lastRoundCallerPlayerId {
                 lastRoundText = "LAST ROUND\ncalled by Player \(lastRoundCallerPlayerId)"
+            } else {
+                lastRoundText = ""
             }
         }
     }

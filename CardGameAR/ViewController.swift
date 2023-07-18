@@ -437,11 +437,17 @@ class ViewController: UIViewController {
     }
     
     private func didEndGame(currentPlayer: Player) -> Bool {
-        if !currentPlayer.hasCards {
+        guard let lastRoundCaller = players.first(where: { $0.identity == lastRoundCalledByPlayerId.value }),
+              let indexOfLastRoundCaller = players.firstIndex(of: lastRoundCaller)
+        else { return false }
+        let indexOfPlayerBeforeLastRoudnCaller = indexOfLastRoundCaller == players.count - 1 ? 0 : indexOfLastRoundCaller + 1
+        let playerBeforeLastRoundCaller = players[indexOfPlayerBeforeLastRoudnCaller]
+        if !currentPlayer.hasCards || currentPlayer == playerBeforeLastRoundCaller {
             let pointsPerPlayer = players.map { player in
                 PointsPerPlayer(playerId: player.identity, points: player.points)
             }
             updateGameState(.postGame(pointsPerPlayer))
+            lastRoundCalledByPlayerId.send(nil)
             return true
         }
         return false
