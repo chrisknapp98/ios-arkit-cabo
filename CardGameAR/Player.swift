@@ -146,7 +146,7 @@ class Player: Entity, HasModel, HasCollision {
         }
     }
     
-    private func turnCard(_ card: Entity) async {
+    func turnCard(_ card: Entity) async {
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
                 rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),

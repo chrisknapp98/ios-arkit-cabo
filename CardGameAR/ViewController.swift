@@ -459,6 +459,13 @@ class ViewController: UIViewController {
             let pointsPerPlayer = players.map { player in
                 PointsPerPlayer(playerId: player.identity, points: player.points)
             }
+            for player in players {
+                for card in player.children.filter({ $0.name.contains(PlayingCard.prefix) }) {
+                    Task {
+                        await player.turnCard(card)
+                    }
+                }
+            }
             updateGameState(.postGame(pointsPerPlayer))
             lastRoundCalledByPlayerId.send(nil)
             return true
