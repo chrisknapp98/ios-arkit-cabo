@@ -62,11 +62,13 @@ class Player: Entity, HasModel, HasCollision {
         let cards = Array(player.children).filter { $0.name.contains(PlayingCard.prefix) }
         let gridWidth = 2
         let gridHeight = cards.count / gridWidth
-        let cardSpacing: Float = 0.1  // adjust this to set the spacing between the cards
+        let cardSpacingW: Float = 0.07  // adjust this to set the spacing between the cards
+        let cardSpacingH: Float = 0.1
+        
         
         // Compute the total width and height of the grid
-        let totalWidth = cardSpacing * Float(gridWidth - 1)
-        let totalHeight = cardSpacing * Float(gridHeight - 1)
+        let totalWidth = cardSpacingW * Float(gridWidth - 1)
+        let totalHeight = cardSpacingH * Float(gridHeight - 1)
         
         // Define an offset for the grid
         let gridOffset = SIMD3<Float>(-totalWidth / 2, 0, -totalHeight)
@@ -74,7 +76,7 @@ class Player: Entity, HasModel, HasCollision {
         for (index, card) in cards.enumerated() {
             let row = index / gridWidth
             let column = index % gridWidth
-            let offsetPosition = SIMD3<Float>(cardSpacing * Float(column), 0, -cardSpacing * Float(row))
+            let offsetPosition = SIMD3<Float>(cardSpacingW * Float(column), 0, -cardSpacingH * Float(row))
             // Your existing quaternion, which is a 180 degree rotation around the x-axis
             let xAxisAlignment = simd_quatf(angle: Float.pi, axis: SIMD3(x: 1, y: 0, z: 0))
             
