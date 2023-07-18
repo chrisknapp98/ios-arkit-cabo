@@ -27,18 +27,29 @@ extension Entity {
         // TODO: maybe lift the card slightly from the ground depending on the number of children
 
         guard let playingCard = children.reversed().first else { return }
-
-        
-        var targetTransform = Transform(
-               rotation: simd_quatf(angle: 0, axis: SIMD3<Float>(1, 0, 0)),
-               translation: player.position(relativeTo: self)
-           )
-
-           var animationDefinition = FromToByAnimation(
-               to: targetTransform,
-               bindTarget: .transform
-           )
-           var animationResource = try! AnimationResource.generate(with: animationDefinition)
+            var targetTransformRotation = playingCard.transform.rotation
+            if name == DrawPile.identifier {
+                targetTransformRotation *= simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1))
+            }
+            
+            // Get the player's rotation matrix and extract the z-axis vector
+            let playerRotationMatrix = simd_float3x3(player.transform.rotation)
+            let playerZAxisDirection = playerRotationMatrix.columns.2  // Use z-axis vector here
+            
+            // Create a quaternion for the player's z-axis direction
+            let playerZRotation = simd_quatf(from: SIMD3(x: 0, y: 0, z: 1), to: playerZAxisDirection)  // Use z-axis here
+            
+            // Combine the two rotations by multiplying the quaternions
+            let combineAlignment = playerZRotation
+            
+            let animationDefinition1 = FromToByAnimation(
+                to: Transform(
+                    rotation: targetTransformRotation * combineAlignment,
+                    translation: player.position(relativeTo: self) + SIMD3<Float>(0, Player.avatarHeight, 0)
+                ),
+                bindTarget: .transform
+            )
+           var animationResource = try! AnimationResource.generate(with: animationDefinition1)
 
            await playingCard.playAnimationAsync(animationResource, transitionDuration: 1, startsPaused: false)
         
@@ -49,12 +60,12 @@ extension Entity {
         playingCard.transform.translation = player.transform.translation
 
         // Then animate from the player's location to the final location
-        targetTransform = Transform(
+       let targetTransform = Transform(
             rotation: simd_quatf(angle: 0, axis: SIMD3<Float>(1, 0, 0)),
             translation: SIMD3<Float>(0, Player.avatarHeight, 0)
         )
 
-        animationDefinition = FromToByAnimation(
+       let animationDefinition = FromToByAnimation(
             to: targetTransform,
             bindTarget: .transform
         )
