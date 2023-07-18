@@ -206,7 +206,7 @@ class Player: Entity, HasModel, HasCollision {
         let animationDefinition1 = FromToByAnimation(
             to: Transform(
                 rotation: card.transform.rotation * simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 0, 1)),
-                translation: self.position
+                translation: currentlyDrawnCard.position(relativeTo: self)
             ),
             bindTarget: .transform
         )
