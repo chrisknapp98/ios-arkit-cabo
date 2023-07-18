@@ -60,30 +60,42 @@ class ViewController: UIViewController {
     private func subscribeToGameStateChanges() {
         currentGameState.sink { [weak self] gameState in
             switch gameState {
+            case .preGame(let state):
+                switch state {
+                case .placeDrawPile:
+                    self?.resetGame()
+                    break
+                default:
+                    break
+                }
+                self?.callToActionView?.isUserInteractionEnabled = false
+                self?.changeUndoViewAndLastRoundCallViewVisibility(isHidden: true)
+                break
             case .inGame(let state):
                 switch state {
                 case .waitForInteractionTypeSelection:
                     self?.callToActionView?.isUserInteractionEnabled = true
-                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
+                    self?.changeUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                     break
                 case .selectedInteractionType:
                     self?.callToActionView?.isUserInteractionEnabled = false
-                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: false)
+                    self?.changeUndoViewAndLastRoundCallViewVisibility(isHidden: false)
                     break
                 default:
-                    self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
+                    self?.changeUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                     break
                 }
                 break
-            default:
-                self?.toggleUndoViewAndLastRoundCallViewVisibility(isHidden: true)
+            case .postGame:
+                self?.callToActionView?.isUserInteractionEnabled = true
+                self?.changeUndoViewAndLastRoundCallViewVisibility(isHidden: true)
                 break
             }
         }
         .store(in: &cancellables)
     }
     
-    private func toggleUndoViewAndLastRoundCallViewVisibility(isHidden: Bool) {
+    private func changeUndoViewAndLastRoundCallViewVisibility(isHidden: Bool) {
         self.undoView?.isHidden = isHidden
         self.lastRoundCallView?.isHidden = isHidden
     }
@@ -451,6 +463,15 @@ class ViewController: UIViewController {
             return true
         }
         return false
+    }
+    
+    private func resetGame() {
+        drawPile = nil
+        discardPile = nil
+        players = []
+        arView.session.currentFrame?.anchors.forEach { anchor in
+            arView.session.remove(anchor: anchor)
+        }
     }
     
 }

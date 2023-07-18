@@ -13,6 +13,7 @@ struct CallToActionView: View {
     @State private var callToAction: String = ""
     @State private var currentGameState: GameState?
     @State private var lastRoundText: String = ""
+    @State private var wasLastRound: Bool = false
     private let gameStatePublisher: AnyPublisher<GameState, Never>
     private let updateGameStateAction: (GameState) -> Void
     private let lastRoundCalledByPlayerIdPublisher: AnyPublisher<Int?, Never>
@@ -59,6 +60,15 @@ struct CallToActionView: View {
                                 .blur(radius: 20, opaque: false)
                         }
                     )
+            } else if lastRoundText.isEmpty == wasLastRound {
+                Button {
+                    reset()
+                } label: {
+                    Text("Play Again")
+                        .padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding()
             }
             Spacer()
             if case let .inGame(state) = currentGameState {
@@ -83,12 +93,15 @@ struct CallToActionView: View {
             if let lastRoundCallerPlayerId {
                 lastRoundText = "LAST ROUND\ncalled by Player \(lastRoundCallerPlayerId)"
             } else {
+                if !lastRoundText.isEmpty {
+                    wasLastRound = true
+                }
                 lastRoundText = ""
             }
         }
     }
     
-    func buttonForInteractionType(_ interactionType: CardInteraction, playerId: Int, cardValue: Int) -> some View {
+    private func buttonForInteractionType(_ interactionType: CardInteraction, playerId: Int, cardValue: Int) -> some View {
         var interactionType = interactionType
         var isPerformActionInteractionType = false
         let cardAction = CardAction(cardValue: cardValue)
@@ -109,6 +122,10 @@ struct CallToActionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
+    private func reset() {
+        updateGameStateAction(.preGame(.placeDrawPile))
+        wasLastRound = false
+    }
     
     private func handleGameStateChange(_ gameState: GameState) {
         switch gameState {
