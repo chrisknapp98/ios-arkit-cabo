@@ -395,16 +395,19 @@ class ViewController: UIViewController {
         }
     }
     
-    
     private func dealCards() async {
         updateGameState(.inGame(.dealingCards))
         await drawPile?.dealCards(cardsPerPlayer: cardsPerPlayer, players: players)
         if let discardPile {
             await drawPile?.moveLastCardToDiscardPile(discardPile)
         }
-        for player in players {
-            rotatePlayerFacingTowardsDrawPile(player)
-            await player.arrangeDealtCardsInGrid()
+        await withTaskGroup(of: Void.self) { group in
+            for player in players {
+                group.addTask {
+                    await self.rotatePlayerFacingTowardsDrawPile(player)
+                    await player.arrangeDealtCardsInGrid()
+                }
+            }
         }
     }
     
