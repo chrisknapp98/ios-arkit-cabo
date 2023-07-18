@@ -454,7 +454,8 @@ class ViewController: UIViewController {
         else { return false }
         let indexOfPlayerBeforeLastRoudnCaller = indexOfLastRoundCaller == players.count - 1 ? 0 : indexOfLastRoundCaller + 1
         let playerBeforeLastRoundCaller = players[indexOfPlayerBeforeLastRoudnCaller]
-        if !currentPlayer.hasCards || currentPlayer == playerBeforeLastRoundCaller {
+        
+        if !currentPlayer.hasCards || currentPlayer == playerBeforeLastRoundCaller || drawPile?.entity.children.isEmpty ?? false {
             let pointsPerPlayer = players.map { player in
                 PointsPerPlayer(playerId: player.identity, points: player.points)
             }
